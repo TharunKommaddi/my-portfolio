@@ -3,19 +3,18 @@ import React, { useState, useEffect } from 'react';
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    setIsLoaded(true);
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
-  
   const navigateTo = (section) => {
     setCurrentSection(section);
     setIsMenuOpen(false);
@@ -33,14 +32,15 @@ const Portfolio = () => {
   return (
     <>
       <style>{styles}</style>
-      <div className={`portfolio ${isLoaded ? 'loaded' : ''}`}>
-        
-        {/* Navigation */}
-        <nav className="nav">
+      <div className="portfolio">
+        {/* Enhanced Navigation */}
+        <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
-            <div className="nav-brand" onClick={() => navigateTo('home')}>
-              <span className="brand-text">Tanuja</span>
-              <span className="brand-dot"></span>
+            <div className="nav-left">
+              <span className="logo" onClick={() => navigateTo('home')}>
+                <span className="logo-text">Tanuja</span>
+                <span className="logo-dot"></span>
+              </span>
             </div>
             
             <div className="nav-menu">
@@ -49,7 +49,6 @@ const Portfolio = () => {
                   key={item}
                   className={`nav-link ${currentSection === item ? 'active' : ''}`}
                   onClick={() => navigateTo(item)}
-                  style={{ '--delay': `${index * 0.1}s` }}
                 >
                   <span className="nav-number">0{index + 1}</span>
                   <span className="nav-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
@@ -57,8 +56,8 @@ const Portfolio = () => {
               ))}
             </div>
 
-            <div className="nav-mobile">
-              <button className="mobile-toggle" onClick={toggleMenu}>
+            <div className="nav-right-mobile">
+              <button className="menu-toggle" onClick={toggleMenu}>
                 <span className={`hamburger ${isMenuOpen ? 'active' : ''}`}>
                   <span></span>
                   <span></span>
@@ -69,65 +68,45 @@ const Portfolio = () => {
           </div>
         </nav>
 
-        {/* Floating Menu Button */}
+        {/* Enhanced Floating Menu */}
         <div className={`floating-menu ${isMenuOpen ? 'active' : ''}`}>
-          <button className="floating-btn" onClick={toggleMenu}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path 
-                d={isMenuOpen ? "M6 6L18 18M6 18L18 6" : "M3 12H21M3 6H21M3 18H21"} 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
+          <button className="floating-menu-button" onClick={toggleMenu}>
+            <span className="floating-inner">
+              <span className="floating-line"></span>
+              <span className="floating-line"></span>
+            </span>
           </button>
         </div>
-
-        {/* Menu Overlay */}
+          
+        {/* Enhanced Menu Overlay */}
         <div className={`menu-overlay ${isMenuOpen ? 'active' : ''}`} onClick={closeMenu}>
           <div className="menu-content" onClick={(e) => e.stopPropagation()}>
-            <div className="menu-header">
-              <h2>Navigation</h2>
-              <span className="menu-subtitle">Where would you like to go?</span>
-            </div>
-            <div className="menu-items">
-              {['home', 'work', 'about', 'contact'].map((item, index) => (
-                <button 
-                  key={item}
-                  className="menu-item"
-                  onClick={() => navigateTo(item)}
-                  style={{ '--delay': `${index * 0.1}s` }}
-                >
-                  <span className="item-number">0{index + 1}</span>
-                  <span className="item-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
-                  <svg className="item-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              ))}
-            </div>
+            <div className="menu-background"></div>
+            {['home', 'work', 'about', 'contact'].map((item, index) => (
+              <button 
+                key={item}
+                className="menu-item" 
+                onClick={() => navigateTo(item)}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <span className="menu-number">0{index + 1}</span>
+                <span className="menu-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+                <span className="menu-arrow">→</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Main Content */}
         <main className="main-content">
           {renderContent()}
         </main>
 
-        {/* Footer */}
         <footer className="footer">
-          <div className="footer-container">
-            <div className="footer-content">
-              <div className="footer-brand">
-                <span>Tanuja</span>
-                <span className="footer-year">© 2025</span>
-              </div>
-              <div className="footer-links">
-                <button onClick={() => navigateTo('about')}>Privacy</button>
-                <button onClick={() => navigateTo('contact')}>Terms</button>
-                <a href="mailto:tanuja.dev@example.com">Email</a>
-              </div>
+          <div className="footer-content">
+            <p>© 2025 Tanuja. Crafted with precision.</p>
+            <div className="footer-links">
+              <a href="#" onClick={() => navigateTo('about')}>Privacy</a>
+              <a href="#" onClick={() => navigateTo('contact')}>Terms</a>
             </div>
           </div>
         </footer>
@@ -141,46 +120,40 @@ const HomeSection = ({ navigateTo }) => (
     <div className="hero-background">
       <div className="gradient-orb orb-1"></div>
       <div className="gradient-orb orb-2"></div>
-      <div className="gradient-orb orb-3"></div>
     </div>
     <div className="container">
       <div className="hero-content">
-        <div className="hero-badge" data-aos="fade-up">
+        <div className="hero-badge">
           <span className="badge-dot"></span>
           Available for new projects
         </div>
-        <h1 className="hero-title" data-aos="fade-up" data-aos-delay="100">
+        <h1 className="hero-title">
           <span className="title-line">Full Stack</span>
-          <span className="title-line highlight">Developer</span>
+          <span className="title-line title-outline">Developer</span>
           <span className="title-line">& Problem Solver</span>
         </h1>
-        <div className="hero-meta" data-aos="fade-up" data-aos-delay="200">
-          <span className="meta-name">Tanuja</span>
-          <span className="meta-divider"></span>
-          <span className="meta-location">Based in India</span>
+        <div className="hero-subtitle">
+          <span className="name">Tanuja</span>
+          <span className="location">Based in India</span>
         </div>
-        <p className="hero-description" data-aos="fade-up" data-aos-delay="300">
+        <p className="hero-description">
           I craft scalable web applications using modern technologies. 
           Passionate about creating efficient solutions that bridge the gap 
           between frontend aesthetics and backend functionality.
         </p>
-        <div className="hero-actions" data-aos="fade-up" data-aos-delay="400">
+        <div className="hero-actions">
           <button className="btn btn-primary" onClick={() => navigateTo('work')}>
             <span>View My Work</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span className="btn-arrow">↗</span>
           </button>
           <button className="btn btn-secondary" onClick={() => navigateTo('contact')}>
             <span>Get in Touch</span>
           </button>
         </div>
       </div>
-      <div className="hero-scroll" data-aos="fade-up" data-aos-delay="500">
-        <span>Scroll to explore</span>
-        <div className="scroll-indicator">
-          <div className="scroll-line"></div>
-        </div>
+      <div className="hero-scroll">
+        <span>Scroll</span>
+        <div className="scroll-indicator"></div>
       </div>
     </div>
   </section>
@@ -188,109 +161,89 @@ const HomeSection = ({ navigateTo }) => (
 
 const WorkSection = ({ navigateTo }) => {
   const projects = [
-    {
-      title: "E-Commerce Platform",
-      category: "Full Stack Development",
+    { 
+      title: "E-Commerce Platform", 
+      category: "Full Stack Development", 
       year: "2024",
-      tech: ["React", "Node.js", "MongoDB", "Stripe"],
-      description: "Complete online store with payment integration, inventory management, and admin dashboard",
-      image: "01"
+      tech: "React, Node.js, MongoDB",
+      description: "Complete online store with payment integration and admin dashboard"
     },
-    {
-      title: "Task Management App",
-      category: "MERN Stack",
-      year: "2024", 
-      tech: ["React", "Express", "MongoDB", "Socket.io"],
-      description: "Collaborative project management tool with real-time updates and team collaboration features",
-      image: "02"
-    },
-    {
-      title: "Social Media Dashboard",
-      category: "Frontend + API",
+    { 
+      title: "Task Management App", 
+      category: "MERN Stack", 
       year: "2024",
-      tech: ["Next.js", "REST APIs", "Chart.js"],
-      description: "Analytics dashboard for social media management with data visualization and reporting",
-      image: "03"
+      tech: "React, Express, MongoDB",
+      description: "Collaborative project management tool with real-time updates"
     },
-    {
-      title: "Weather Application",
-      category: "React Application",
+    { 
+      title: "Social Media Dashboard", 
+      category: "Frontend + API", 
+      year: "2024",
+      tech: "Next.js, REST APIs",
+      description: "Analytics dashboard for social media management"
+    },
+    { 
+      title: "Weather App", 
+      category: "React Application", 
       year: "2023",
-      tech: ["React", "Weather API", "PWA"],
-      description: "Real-time weather forecasting with location services and offline capabilities",
-      image: "04"
+      tech: "React, Weather API",
+      description: "Real-time weather forecasting with location services"
     },
-    {
-      title: "Portfolio Website",
+    { 
+      title: "Portfolio Website", 
       category: "Frontend Development", 
       year: "2023",
-      tech: ["React", "CSS3", "Responsive"],
-      description: "Modern portfolio showcasing responsive design principles and smooth animations",
-      image: "05"
+      tech: "React, CSS3, Responsive",
+      description: "Modern portfolio showcasing responsive design principles"
     },
-    {
-      title: "Blog CMS Platform",
-      category: "Full Stack",
+    { 
+      title: "Blog CMS", 
+      category: "Full Stack", 
       year: "2023",
-      tech: ["Node.js", "MySQL", "React", "AWS"],
-      description: "Content management system with user authentication, rich text editor, and cloud storage",
-      image: "06"
+      tech: "Node.js, MySQL, React",
+      description: "Content management system with user authentication"
     }
   ];
 
   return (
-    <section className="work">
+    <section className="work-section">
+      <div className="section-background">
+        <div className="grid-pattern"></div>
+      </div>
       <div className="container">
-        <div className="section-header" data-aos="fade-up">
+        <div className="section-header">
           <span className="section-number">02</span>
           <h2 className="section-title">Featured Projects</h2>
           <p className="section-subtitle">
             A showcase of full-stack applications built with modern technologies and best practices
           </p>
         </div>
-        
-        <div className="projects-grid">
-          {projects.map((project, index) => (
-            <div 
-              key={index} 
-              className="project-card"
-              data-aos="fade-up"
-              data-aos-delay={index * 100}
-            >
-              <div className="project-image">
-                <div className="project-number">{project.image}</div>
-                <div className="project-overlay">
-                  <button className="project-link">
-                    <span>View Project</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
+        <div className="work-grid">
+          {projects.map((item, index) => (
+            <div key={index} className="work-item">
+              <div className="work-image">
+                <div className="work-number">0{index + 1}</div>
+                <div className="work-overlay">
+                  <span className="view-project">View Project</span>
+                  <span className="project-arrow">↗</span>
                 </div>
+                <div className="work-glow"></div>
               </div>
-              <div className="project-info">
-                <div className="project-meta">
-                  <span className="project-category">{project.category}</span>
-                  <span className="project-year">{project.year}</span>
-                </div>
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-description">{project.description}</p>
-                <div className="project-tech">
-                  {project.tech.map((tech, i) => (
-                    <span key={i} className="tech-tag">{tech}</span>
-                  ))}
+              <div className="work-info">
+                <h3 className="work-title">{item.title}</h3>
+                <p className="work-description">{item.description}</p>
+                <div className="work-meta">
+                  <span className="work-tech">{item.tech}</span>
+                  <span className="work-year">{item.year}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        
-        <div className="work-cta" data-aos="fade-up">
+        <div className="work-cta">
           <button className="btn btn-outline" onClick={() => navigateTo('contact')}>
             <span>Interested in working together?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span className="btn-arrow">→</span>
           </button>
         </div>
       </div>
@@ -298,230 +251,171 @@ const WorkSection = ({ navigateTo }) => {
   );
 };
 
-const AboutSection = () => {
-  const skills = {
-    Frontend: ["React", "JavaScript", "TypeScript", "Next.js", "CSS3", "HTML5"],
-    Backend: ["Node.js", "Express", "Python", "Django", "REST APIs", "GraphQL"],
-    Database: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"],
-    Tools: ["Git", "Docker", "AWS", "Figma", "Postman"]
-  };
-
-  return (
-    <section className="about">
-      <div className="container">
-        <div className="about-grid">
-          <div className="about-content">
-            <div className="section-header" data-aos="fade-up">
-              <span className="section-number">03</span>
-              <h2 className="section-title">About Me</h2>
-            </div>
-            
-            <div className="about-text" data-aos="fade-up" data-aos-delay="100">
-              <p>
-                Hi, I'm Tanuja! I'm a passionate Full Stack Web Developer with a love for 
-                creating digital solutions that make a difference. With expertise in both 
-                frontend and backend technologies, I enjoy the entire development lifecycle.
-              </p>
-              <p>
-                My journey in web development started with curiosity about how websites work, 
-                and it has evolved into a career focused on building scalable, user-centric 
-                applications. I believe in writing clean, maintainable code and staying 
-                updated with the latest technologies.
-              </p>
-              <p>
-                When I'm not coding, you'll find me exploring new frameworks, contributing 
-                to open source projects, or mentoring aspiring developers in my community.
-              </p>
-            </div>
-            
-            <div className="experience" data-aos="fade-up" data-aos-delay="200">
-              <h3>Experience</h3>
-              <div className="experience-timeline">
-                <div className="experience-item">
-                  <div className="experience-dot"></div>
-                  <div className="experience-content">
-                    <h4>Full Stack Developer</h4>
-                    <span className="experience-period">2022 - Present</span>
-                    <p>Building modern web applications and leading development teams</p>
-                  </div>
-                </div>
-                <div className="experience-item">
-                  <div className="experience-dot"></div>
-                  <div className="experience-content">
-                    <h4>Frontend Developer</h4>
-                    <span className="experience-period">2021 - 2022</span>
-                    <p>Specialized in React development and UI/UX implementation</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+const AboutSection = () => (
+  <section className="about-section">
+    <div className="container">
+      <div className="about-grid">
+        <div className="about-content">
+          <span className="section-number">03</span>
+          <h2 className="section-title">About Me</h2>
+          <div className="about-text">
+            <p>
+              Hi, I'm Tanuja! I'm a passionate Full Stack Web Developer with a love for 
+              creating digital solutions that make a difference. With expertise in both 
+              frontend and backend technologies, I enjoy the entire development lifecycle.
+            </p>
+            <p>
+              My journey in web development started with curiosity about how websites work, 
+              and it has evolved into a career focused on building scalable, user-centric 
+              applications. I believe in writing clean, maintainable code and staying 
+              updated with the latest technologies.
+            </p>
+            <p>
+              When I'm not coding, you'll find me exploring new frameworks, contributing 
+              to open source projects, or mentoring aspiring developers in my community.
+            </p>
           </div>
           
-          <div className="about-sidebar">
-            <div className="about-image" data-aos="fade-up" data-aos-delay="300">
-              <div className="image-container">
-                <div className="image-placeholder">
-                  <span>Tanuja's Photo</span>
-                </div>
-                <div className="image-decoration"></div>
+          <div className="experience">
+            <h3>Experience</h3>
+            <div className="experience-item">
+              <div className="experience-dot"></div>
+              <div className="experience-content">
+                <h4>Full Stack Developer</h4>
+                <span>2022 - Present</span>
+                <p>Building modern web applications and leading development teams</p>
               </div>
             </div>
-            
-            <div className="skills-section" data-aos="fade-up" data-aos-delay="400">
-              <h3>Technical Skills</h3>
-              <div className="skills-grid">
-                {Object.entries(skills).map(([category, techs]) => (
-                  <div key={category} className="skill-category">
-                    <h4>{category}</h4>
-                    <div className="skill-tags">
-                      {techs.map((tech, index) => (
-                        <span 
-                          key={tech} 
-                          className="skill-tag"
-                          style={{ '--delay': `${index * 0.1}s` }}
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+            <div className="experience-item">
+              <div className="experience-dot"></div>
+              <div className="experience-content">
+                <h4>Frontend Developer</h4>
+                <span>2021 - 2022</span>
+                <p>Specialized in React development and UI/UX implementation</p>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const ContactSection = () => (
-  <section className="contact">
-    <div className="container">
-      <div className="section-header" data-aos="fade-up">
-        <span className="section-number">04</span>
-        <h2 className="section-title">Let's Build Something Amazing</h2>
-        <p className="section-subtitle">
-          Ready to turn your ideas into reality? I'm always excited to work on 
-          challenging projects and collaborate with innovative teams.
-        </p>
-      </div>
-      
-      <div className="contact-grid">
-        <div className="contact-form-section" data-aos="fade-up" data-aos-delay="100">
-          <h3>Send me a message</h3>
-          <form className="contact-form">
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input type="text" id="name" placeholder="Your full name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" id="email" placeholder="your.email@example.com" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="project">Project Type</label>
-              <select id="project">
-                <option>Select project type</option>
-                <option>Full Stack Web Application</option>
-                <option>Frontend Development</option>
-                <option>Backend API Development</option>
-                <option>Website Redesign</option>
-                <option>E-commerce Solution</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea id="message" placeholder="Tell me about your project..." rows="5"></textarea>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              <span>Send Message</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </form>
         </div>
         
-        <div className="contact-info-section" data-aos="fade-up" data-aos-delay="200">
-          <div className="contact-info">
-            <div className="contact-item">
-              <div className="contact-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="contact-details">
-                <h4>Email</h4>
-                <a href="mailto:tanuja.dev@example.com">tanuja.dev@example.com</a>
-              </div>
-            </div>
-            
-            <div className="contact-item">
-              <div className="contact-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M22 16.92V19.92C22 20.52 21.39 21 20.77 21C9.39 21 2 13.61 2 2.23C2 1.61 2.48 1 3.08 1H6.08C6.68 1 7.18 1.44 7.25 2.04C7.37 3.24 7.58 4.42 7.88 5.56C8.03 6.05 7.88 6.58 7.5 6.95L5.79 8.66C7.24 11.42 9.58 13.76 12.34 15.21L14.05 13.5C14.42 13.12 14.95 12.97 15.44 13.12C16.58 13.42 17.76 13.63 18.96 13.75C19.56 13.82 20 14.32 20 14.92V17.92H22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="contact-details">
-                <h4>Phone</h4>
-                <a href="tel:+919876543210">+91 98765 43210</a>
-              </div>
-            </div>
-            
-            <div className="contact-item">
-              <div className="contact-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 10C21 17L12 23L3 17C3 10 12 2 12 2S21 3 21 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-              </div>
-              <div className="contact-details">
-                <h4>Location</h4>
-                <span>Bangalore, India</span>
-              </div>
-            </div>
-            
-            <div className="contact-item">
-              <div className="contact-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                  <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="contact-details">
-                <h4>Response Time</h4>
-                <span>Usually within 24 hours</span>
+        <div className="about-sidebar">
+          <div className="about-image">
+            <div className="image-placeholder">
+              <div className="image-overlay">
+                <span>Tanuja's Photo</span>
               </div>
             </div>
           </div>
           
-          <div className="social-section">
-            <h4>Connect with me</h4>
-            <div className="social-links">
+          <div className="skills-section">
+            <h3>Technical Skills</h3>
+            <div className="skills">
               {[
-                { name: "LinkedIn", icon: "linkedin" },
-                { name: "GitHub", icon: "github" },
-                { name: "Twitter", icon: "twitter" },
-                { name: "Dev.to", icon: "dev" }
-              ].map((social, index) => (
-                <a key={social.name} href="#" className="social-link">
-                  <span className="social-number">0{index + 1}</span>
-                  <span className="social-name">{social.name}</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
+                { name: "Frontend", skills: ["React", "JavaScript", "TypeScript", "Next.js", "CSS3", "HTML5"] },
+                { name: "Backend", skills: ["Node.js", "Express", "Python", "Django", "REST APIs", "GraphQL"] },
+                { name: "Database", skills: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"] },
+                { name: "Tools & Others", skills: ["Git", "Docker", "AWS", "Figma", "Postman"] }
+              ].map((category, index) => (
+                <div key={index} className="skill-category">
+                  <h4>{category.name}</h4>
+                  <div className="skill-tags">
+                    {category.skills.map((skill, skillIndex) => (
+                      <span key={skillIndex} className="skill-tag">{skill}</span>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const ContactSection = () => (
+  <section className="contact-section">
+    <div className="container">
+      <div className="contact-content">
+        <span className="section-number">04</span>
+        <h2 className="section-title">Let's Build Something Amazing</h2>
+        <p className="contact-text">
+          Ready to turn your ideas into reality? I'm always excited to work on 
+          challenging projects and collaborate with innovative teams.
+        </p>
+        
+        <div className="contact-grid">
+          <div className="contact-form-section">
+            <h3>Send me a message</h3>
+            <div className="contact-form">
+              {[
+                { label: "Name", type: "text", placeholder: "Your name" },
+                { label: "Email", type: "email", placeholder: "your.email@example.com" },
+              ].map((field, index) => (
+                <div key={index} className="form-group">
+                  <label>{field.label}</label>
+                  <input type={field.type} placeholder={field.placeholder} />
+                </div>
+              ))}
+              <div className="form-group">
+                <label>Project Type</label>
+                <select>
+                  <option>Select project type</option>
+                  <option>Full Stack Web Application</option>
+                  <option>Frontend Development</option>
+                  <option>Backend API Development</option>
+                  <option>Website Redesign</option>
+                  <option>E-commerce Solution</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Message</label>
+                <textarea placeholder="Tell me about your project..."></textarea>
+              </div>
+              <button type="submit" className="btn btn-primary">
+                <span>Send Message</span>
+                <span className="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
           
-          <div className="availability">
-            <div className="status-indicator">
-              <div className="status-dot"></div>
-              <span>Available for new projects</span>
+          <div className="contact-info-section">
+            <div className="contact-info">
+              {[
+                { label: "Email", value: "tanuja.dev@example.com", href: "mailto:tanuja.dev@example.com" },
+                { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
+                { label: "Location", value: "Bangalore, India" },
+                { label: "Response Time", value: "Usually within 24 hours" }
+              ].map((item, index) => (
+                <div key={index} className="contact-item">
+                  <h4>{item.label}</h4>
+                  {item.href ? (
+                    <a href={item.href}>{item.value}</a>
+                  ) : (
+                    <span>{item.value}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div className="social-section">
+              <h4>Connect with me</h4>
+              <div className="social-links">
+                {["LinkedIn", "GitHub", "Twitter", "Dev.to"].map((platform, index) => (
+                  <a key={index} href="#" className="social-link">
+                    <span className="social-number">0{index + 1}</span>
+                    <span className="social-text">{platform}</span>
+                    <span className="social-arrow">↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+            
+            <div className="availability">
+              <div className="status-indicator">
+                <div className="status-dot"></div>
+                <span>Available for new projects</span>
+              </div>
             </div>
           </div>
         </div>
@@ -538,97 +432,45 @@ const styles = `
     box-sizing: border-box;
   }
 
-  :root {
-    --primary: #0066cc;
-    --primary-dark: #0052a3;
-    --primary-light: #66ccff;
-    --white: #ffffff;
-    --black: #0a0a0a;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
-    --gray-400: #ced4da;
-    --gray-500: #adb5bd;
-    --gray-600: #6c757d;
-    --gray-700: #495057;
-    --gray-800: #343a40;
-    --gray-900: #212529;
-    
-    --font-primary: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
-    
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
   }
 
   body {
-    font-family: var(--font-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: var(--white);
-    background: var(--black);
+    color: #0a0a0a;
+    background: #0a0a0a;
     overflow-x: hidden;
     font-weight: 400;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
-  #root {
+  #root, .portfolio {
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Portfolio Container */
-  .portfolio {
-    width: 100%;
-    min-height: 100vh;
-    overflow-x: hidden;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: var(--transition-slow);
-  }
-
-  .portfolio.loaded {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Container */
-  .container {
-    width: 100%;
-    max-width: min(1400px, calc(100vw - 4rem));
-    margin: 0 auto;
-    padding: 0 2rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-
-  /* Navigation */
+  /* Enhanced Navigation */
   .nav {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    width: 100%;
     z-index: 1000;
-    background: rgba(10, 10, 10, 0.8);
+    background: rgba(10, 10, 10, 0.9);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav.scrolled {
+    background: rgba(10, 10, 10, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .nav-container {
@@ -637,33 +479,35 @@ const styles = `
     align-items: center;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
   }
 
-  .nav-brand {
+  .logo {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
 
-  .nav-brand:hover {
-    opacity: 0.8;
-  }
-
-  .brand-text {
+  .logo-text {
     font-size: 1.25rem;
     font-weight: 600;
+    color: white;
     letter-spacing: -0.02em;
   }
 
-  .brand-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--primary);
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: #0066cc;
     border-radius: 50%;
-    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
+  }
+
+  .logo:hover .logo-dot {
+    background: #66ccff;
+    transform: scale(1.2);
   }
 
   .nav-menu {
@@ -678,19 +522,40 @@ const styles = `
     gap: 0.5rem;
     background: none;
     border: none;
-    color: var(--white);
-    font-family: inherit;
-    font-size: 0.9rem;
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-lg);
+    color: white;
     cursor: pointer;
-    transition: var(--transition);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
     position: relative;
     overflow: hidden;
-    animation: slideDown 0.6s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
-    transform: translateY(-20px);
+  }
+
+  .nav-number {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .nav-link:hover::before {
+    left: 100%;
   }
 
   .nav-link:hover {
@@ -699,33 +564,17 @@ const styles = `
   }
 
   .nav-link.active {
-    background: var(--primary);
-    color: var(--white);
+    background: #0066cc;
+    color: white;
   }
 
-  .nav-link.active:hover {
-    background: var(--primary-dark);
+  .nav-link.active .nav-number {
+    opacity: 0.8;
   }
 
-  .nav-number {
-    font-size: 0.75rem;
-    opacity: 0.6;
-    font-family: var(--font-mono);
-  }
-
-  .nav-text {
-    font-weight: 500;
-  }
-
-  .nav-mobile {
+  /* Mobile Menu Toggle */
+  .nav-right-mobile {
     display: none;
-  }
-
-  .mobile-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
   }
 
   .hamburger {
@@ -733,17 +582,20 @@ const styles = `
     flex-direction: column;
     width: 24px;
     height: 18px;
-    position: relative;
+    cursor: pointer;
   }
 
   .hamburger span {
-    display: block;
-    height: 2px;
     width: 100%;
-    background: var(--white);
+    height: 2px;
+    background: white;
     margin: 3px 0;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
   }
 
   .hamburger.active span:nth-child(2) {
@@ -751,63 +603,102 @@ const styles = `
   }
 
   .hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: rotate(-45deg) translate(7px, -6px);
   }
 
-  /* Floating Menu */
+  /* Enhanced Floating Menu */
   .floating-menu {
     position: fixed;
     top: 2rem;
     right: 2rem;
     z-index: 10000;
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .floating-btn {
-    width: 60px;
-    height: 60px;
-    background: var(--black);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+  .floating-menu-button {
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    color: var(--white);
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
-    box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 102, 204, 0.3);
+    position: relative;
+    overflow: hidden;
   }
 
-  .floating-btn:hover {
-    background: var(--primary);
-    border-color: var(--primary);
-    transform: scale(1.05);
-    box-shadow: var(--shadow-xl);
+  .floating-menu-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  .floating-menu.active .floating-btn {
-    background: var(--white);
-    color: var(--black);
-    transform: rotate(180deg);
+  .floating-menu-button:hover::before {
+    opacity: 1;
   }
 
-  /* Menu Overlay */
+  .floating-menu-button:hover {
+    transform: scale(1.05) rotate(180deg);
+    box-shadow: 0 12px 48px rgba(0, 102, 204, 0.4);
+  }
+
+  .floating-menu.active .floating-menu-button {
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    transform: scale(0.9) rotate(180deg);
+  }
+
+  .floating-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .floating-line {
+    width: 20px;
+    height: 2px;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .floating-menu.active .floating-line {
+    background: #0a0a0a;
+  }
+
+  .floating-menu.active .floating-line:nth-child(1) {
+    transform: rotate(45deg) translate(1px, 1px);
+  }
+
+  .floating-menu.active .floating-line:nth-child(2) {
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+
+  /* Enhanced Menu Overlay */
   .menu-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(10, 10, 10, 0.95);
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.98), rgba(0, 102, 204, 0.1));
     backdrop-filter: blur(30px);
-    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: var(--transition-slow);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
   }
 
   .menu-overlay.active {
@@ -815,85 +706,97 @@ const styles = `
     visibility: visible;
   }
 
+  .menu-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 102, 204, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-overlay.active .menu-background {
+    transform: translate(-50%, -50%) scale(10);
+  }
+
   .menu-content {
     text-align: center;
-    max-width: 600px;
-    width: 90%;
-  }
-
-  .menu-header {
-    margin-bottom: 3rem;
-  }
-
-  .menu-header h2 {
-    font-size: 2.5rem;
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease 0.2s forwards;
-  }
-
-  .menu-subtitle {
-    color: var(--gray-400);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease 0.3s forwards;
-  }
-
-  .menu-items {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    position: relative;
+    z-index: 2;
   }
 
   .menu-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 2rem;
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--white);
-    font-family: inherit;
-    font-size: 1.5rem;
+    border: none;
+    font-size: clamp(2rem, 5vw, 4rem);
     font-weight: 300;
-    padding: 1.5rem 2rem;
-    border-radius: var(--radius-lg);
+    margin: 2rem 0;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    letter-spacing: -0.02em;
+    font-family: inherit;
     opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-    animation-delay: calc(0.4s + var(--delay));
+    transform: translateY(50px);
+    animation: menuItemSlide 0.6s forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes menuItemSlide {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .menu-number {
+    font-size: 1rem;
+    opacity: 0.4;
+    font-weight: 400;
+  }
+
+  .menu-text {
+    position: relative;
+  }
+
+  .menu-text::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #0066cc;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-arrow {
+    font-size: 2rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-item:hover .menu-text::after {
+    width: 100%;
+  }
+
+  .menu-item:hover .menu-arrow {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .menu-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--primary);
-    transform: translateX(10px) translateY(0);
-  }
-
-  .item-number {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    opacity: 0.5;
-  }
-
-  .item-text {
-    flex: 1;
-    text-align: left;
-    margin-left: 2rem;
-  }
-
-  .item-arrow {
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: var(--transition);
-  }
-
-  .menu-item:hover .item-arrow {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateX(20px);
+    color: #66ccff;
   }
 
   /* Main Content */
@@ -902,108 +805,71 @@ const styles = `
     overflow-x: hidden;
   }
 
-  /* Section Styles */
-  section {
-    width: 100%;
-    padding: 6rem 0 4rem;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .section-header {
-    margin-bottom: 6rem;
-    text-align: center;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .section-number {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--primary);
-    margin-bottom: 1rem;
-    display: block;
-  }
-
-  .section-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 300;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.02em;
+  .container {
+    max-width: min(1400px, 100vw);
+    margin: 0 auto;
+    padding: 0 2rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
-  .section-subtitle {
-    font-size: 1.2rem;
-    color: var(--gray-400);
-    line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-  }
-
-  /* Hero Section */
+  /* Enhanced Hero Section */
   .hero {
+    width: 100%;
     min-height: 100vh;
     display: flex;
     align-items: center;
     position: relative;
-    background: var(--black);
+    padding: 8rem 0 4rem;
     overflow: hidden;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
   }
 
   .hero-background {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
   .gradient-orb {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(45deg, var(--primary), var(--primary-light));
-    filter: blur(60px);
-    opacity: 0.1;
-    animation: float 6s ease-in-out infinite;
+    filter: blur(100px);
+    animation: float 20s ease-in-out infinite;
   }
 
   .orb-1 {
-    width: 300px;
-    height: 300px;
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 102, 204, 0.3) 0%, transparent 70%);
+    top: 20%;
+    left: -10%;
+    animation-delay: -10s;
   }
 
   .orb-2 {
-    width: 200px;
-    height: 200px;
-    top: 60%;
-    right: 20%;
-    animation-delay: 2s;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(102, 204, 255, 0.2) 0%, transparent 70%);
+    bottom: 20%;
+    right: -5%;
+    animation-delay: -5s;
   }
 
-  .orb-3 {
-    width: 150px;
-    height: 150px;
-    bottom: 20%;
-    left: 60%;
-    animation-delay: 4s;
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, -30px) rotate(120deg); }
+    66% { transform: translate(-20px, 20px) rotate(240deg); }
   }
 
   .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 1000px;
+    max-width: 900px;
     word-wrap: break-word;
-    overflow-wrap: break-word;
   }
 
   .hero-badge {
@@ -1014,134 +880,49 @@ const styles = `
     background: rgba(0, 102, 204, 0.1);
     border: 1px solid rgba(0, 102, 204, 0.3);
     border-radius: 50px;
-    color: var(--primary-light);
     font-size: 0.9rem;
     margin-bottom: 3rem;
+    color: #66ccff;
     backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .hero-badge:hover {
+    background: rgba(0, 102, 204, 0.2);
+    transform: translateY(-2px);
   }
 
   .badge-dot {
     width: 8px;
     height: 8px;
-    background: var(--primary);
+    background: #00ff88;
     border-radius: 50%;
     animation: pulse 2s infinite;
   }
 
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
   .hero-title {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(3rem, 8vw, 7rem);
     font-weight: 300;
     line-height: 0.9;
     margin-bottom: 3rem;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
+    color: white;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
   .title-line {
     display: block;
-    overflow: hidden;
-  }
-
-  .title-line.highlight {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-meta {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-  }
-
-  .meta-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-
-  .meta-divider {
-    width: 40px;
-    height: 1px;
-    background: var(--gray-600);
-  }
-
-  .meta-location {
-    color: var(--gray-400);
-  }
-
-  .hero-description {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    color: var(--gray-300);
-    margin-bottom: 3rem;
-    max-width: 600px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-  }
-
-  .hero-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .hero-scroll {
-    position: absolute;
-    right: 2rem;
-    bottom: 3rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    color: var(--gray-500);
-    font-size: 0.9rem;
-  }
-
-  .scroll-indicator {
-    width: 1px;
-    height: 60px;
-    background: var(--gray-700);
     position: relative;
     overflow: hidden;
   }
 
-  .scroll-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 30px;
-    background: var(--primary);
-    animation: scroll-move 2s ease-in-out infinite;
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 2rem;
-    border: 2px solid transparent;
-    border-radius: var(--radius-lg);
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .btn::before {
+  .title-line::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1149,543 +930,901 @@ const styles = `
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.6s;
+    animation: titleShine 3s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes titleShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .title-outline {
+    -webkit-text-stroke: 3px white;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .hero-subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+    opacity: 0.8;
+    color: white;
+  }
+
+  .name {
+    font-weight: 600;
+    position: relative;
+  }
+
+  .name::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #0066cc;
+    animation: underlineGrow 2s ease-out 1s forwards;
+  }
+
+  @keyframes underlineGrow {
+    to { width: 100%; }
+  }
+
+  .location {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .location::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, #0066cc, #66ccff);
+    animation: lineGrow 1.5s ease-out 1.5s forwards;
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left;
+  }
+
+  @keyframes lineGrow {
+    to { transform: translateY(-50%) scaleX(1); }
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    margin-bottom: 4rem;
+    max-width: 600px;
+    opacity: 0.9;
+    color: white;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  /* Enhanced Button Styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border: 2px solid transparent;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50px;
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
   }
 
   .btn:hover::before {
-    left: 100%;
+    width: 300px;
+    height: 300px;
   }
 
   .btn-primary {
-    background: var(--primary);
-    color: var(--white);
-    border-color: var(--primary);
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    color: white;
+    border-color: #0066cc;
   }
 
   .btn-primary:hover {
-    background: var(--primary-dark);
-    border-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, #0052a3, #003d7a);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
   }
 
   .btn-secondary {
-    background: transparent;
-    color: var(--white);
+    color: white;
     border-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
   }
 
   .btn-secondary:hover {
-    background: var(--white);
-    color: var(--black);
-    border-color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    transform: translateY(-3px);
   }
 
   .btn-outline {
-    background: transparent;
-    color: var(--white);
-    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
   }
 
   .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--primary);
-    color: var(--primary-light);
+    background: white;
+    color: #0a0a0a;
+    transform: translateY(-3px);
   }
 
-  /* Work Section */
-  .work {
-    background: var(--black);
+  .btn-arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .projects-grid {
+  .btn:hover .btn-arrow {
+    transform: translateX(5px);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    right: 3rem;
+    bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: white;
+    opacity: 0.7;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .scroll-indicator {
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, #0066cc, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: white;
+    animation: scrollMove 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollMove {
+    0% { transform: translateY(-20px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(60px); opacity: 0; }
+  }
+
+  /* Enhanced Section Headers */
+  .section-header {
+    margin-bottom: 6rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .section-number {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0066cc;
+    margin-bottom: 1rem;
+    display: block;
+    position: relative;
+  }
+
+  .section-number::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 1rem);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, #0066cc, transparent);
+  }
+
+  .section-title {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 300;
+    margin-bottom: 2rem;
+    letter-spacing: -0.03em;
+    color: white;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .section-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 700px;
+    margin: 0 auto;
+    color: white;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Enhanced Work Section */
+  .work-section {
+    width: 100%;
+    padding: 8rem 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .grid-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(rgba(0, 102, 204, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 102, 204, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+  }
+
+  .work-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
     gap: 3rem;
-    margin-bottom: 6rem;
-  }
-
-  .project-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    transition: var(--transition);
-    cursor: pointer;
-  }
-
-  .project-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary);
-  }
-
-  .project-image {
     position: relative;
+    z-index: 2;
+  }
+
+  .work-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    backdrop-filter: blur(10px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .work-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .work-item:hover::before {
+    opacity: 1;
+  }
+
+  .work-item:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(0, 102, 204, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 102, 204, 0.2);
+  }
+
+  .work-image {
+    width: 100%;
     height: 250px;
-    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
   }
 
-  .project-number {
+  .work-number {
     font-size: 4rem;
     font-weight: 100;
     color: rgba(255, 255, 255, 0.1);
-    font-family: var(--font-mono);
+    transition: all 0.5s ease;
   }
 
-  .project-overlay {
+  .work-item:hover .work-number {
+    transform: scale(1.2) rotate(12deg);
+    color: rgba(0, 102, 204, 0.3);
+  }
+
+  .work-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 102, 204, 0.9);
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.9), rgba(102, 204, 255, 0.8));
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 1rem;
     opacity: 0;
-    transition: var(--transition);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .project-card:hover .project-overlay {
+  .work-item:hover .work-overlay {
     opacity: 1;
   }
 
-  .project-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--white);
-    color: var(--black);
-    border: none;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-lg);
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
+  .view-project {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
   }
 
-  .project-link:hover {
-    transform: scale(1.05);
+  .project-arrow {
+    color: white;
+    font-size: 1.5rem;
+    transform: translateX(-10px);
+    transition: transform 0.3s ease;
   }
 
-  .project-info {
+  .work-item:hover .project-arrow {
+    transform: translateX(0);
+  }
+
+  .work-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 102, 204, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: rotate 10s linear infinite;
+  }
+
+  .work-item:hover .work-glow {
+    opacity: 1;
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .work-info {
     padding: 2rem;
+    position: relative;
+    z-index: 2;
   }
 
-  .project-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .project-category {
-    color: var(--primary-light);
-    font-weight: 500;
-  }
-
-  .project-year {
-    color: var(--gray-500);
-    font-family: var(--font-mono);
-  }
-
-  .project-title {
+  .work-title {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1rem;
+    color: white;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
-  .project-description {
-    color: var(--gray-400);
-    line-height: 1.6;
+  .work-description {
+    font-size: 1rem;
+    opacity: 0.8;
     margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: white;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
-  .project-tech {
+  .work-meta {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 1rem;
   }
 
-  .tech-tag {
-    background: rgba(0, 102, 204, 0.1);
-    color: var(--primary-light);
-    padding: 0.25rem 0.75rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
+  .work-tech {
+    color: #66ccff;
     font-weight: 500;
-    white-space: nowrap;
+    font-size: 0.9rem;
+  }
+
+  .work-year {
+    opacity: 0.6;
+    color: white;
+    font-size: 0.9rem;
   }
 
   .work-cta {
     text-align: center;
+    margin-top: 6rem;
+    position: relative;
+    z-index: 2;
   }
 
-  /* About Section */
-  .about {
-    background: var(--black);
+  /* Enhanced About Section */
+  .about-section {
+    width: 100%;
+    padding: 8rem 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    position: relative;
   }
 
   .about-grid {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1.3fr 0.7fr;
     gap: 6rem;
     align-items: start;
   }
 
-  .about-content .section-header {
-    text-align: left;
-    margin-bottom: 3rem;
+  .about-content {
+    position: relative;
   }
 
   .about-text p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--gray-300);
+    font-size: 1.2rem;
+    line-height: 1.8;
     margin-bottom: 2rem;
+    opacity: 0.9;
+    color: white;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
+    position: relative;
+  }
+
+  .about-text p::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(to bottom, #0066cc, #66ccff);
+    transition: height 0.8s ease;
+  }
+
+  .about-text p:hover::before {
+    height: 100%;
+  }
+
+  .experience {
+    margin-top: 4rem;
   }
 
   .experience h3 {
     font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    color: var(--white);
-  }
-
-  .experience-timeline {
+    margin-bottom: 3rem;
+    color: white;
     position: relative;
-    padding-left: 2rem;
   }
 
-  .experience-timeline::before {
+  .experience h3::after {
     content: '';
     position: absolute;
+    bottom: -10px;
     left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--gray-800);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #0066cc, #66ccff);
+    border-radius: 2px;
   }
 
   .experience-item {
-    position: relative;
+    display: flex;
+    gap: 2rem;
     margin-bottom: 3rem;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .experience-item:hover {
+    transform: translateX(10px);
   }
 
   .experience-dot {
-    position: absolute;
-    left: -2rem;
-    top: 0.5rem;
-    width: 12px;
-    height: 12px;
-    background: var(--primary);
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #0066cc, #66ccff);
     border-radius: 50%;
-    border: 3px solid var(--black);
+    margin-top: 0.5rem;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .experience-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .experience-dot::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, #0066cc, transparent);
+    transform: translateX(-50%);
+  }
+
+  .experience-item:last-child .experience-dot::before {
+    display: none;
   }
 
   .experience-content h4 {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    color: white;
   }
 
-  .experience-period {
-    color: var(--primary-light);
+  .experience-content span {
     font-size: 0.9rem;
+    color: #66ccff;
     font-weight: 500;
     margin-bottom: 0.5rem;
     display: block;
   }
 
   .experience-content p {
-    color: var(--gray-400);
+    font-size: 1rem;
+    opacity: 0.8;
+    color: white;
     line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
   }
 
   .about-sidebar {
     position: sticky;
-    top: 8rem;
+    top: 2rem;
   }
 
   .about-image {
-    margin-bottom: 3rem;
-  }
-
-  .image-container {
+    margin-bottom: 4rem;
     position: relative;
   }
 
   .image-placeholder {
     width: 100%;
     height: 400px;
-    background: var(--gray-800);
-    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gray-500);
-    font-size: 1.1rem;
     position: relative;
     overflow: hidden;
+    transition: all 0.5s ease;
   }
 
-  .image-decoration {
+  .image-placeholder:hover {
+    transform: scale(1.02);
+  }
+
+  .image-overlay {
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(45deg, var(--primary), var(--primary-light));
-    border-radius: 50%;
-    opacity: 0.1;
-    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    opacity: 0.6;
   }
 
   .skills-section h3 {
     font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    color: var(--white);
+    margin-bottom: 3rem;
+    color: white;
   }
 
-  .skills-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  .skill-category {
+    margin-bottom: 2.5rem;
   }
 
   .skill-category h4 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--primary-light);
     margin-bottom: 1rem;
+    color: #66ccff;
+    position: relative;
   }
 
   .skill-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.8rem;
   }
 
   .skill-tag {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--gray-300);
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), rgba(102, 204, 255, 0.1));
+    color: #66ccff;
     padding: 0.5rem 1rem;
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
-    white-space: nowrap;
-    transition: var(--transition);
-    animation: fadeInUp 0.6s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
-    transform: translateY(20px);
+    border: 1px solid rgba(0, 102, 204, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
   }
 
   .skill-tag:hover {
-    background: rgba(0, 102, 204, 0.1);
-    color: var(--primary-light);
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.4), rgba(102, 204, 255, 0.2));
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
   }
 
-  /* Contact Section */
-  .contact {
-    background: var(--black);
+  /* Enhanced Contact Section */
+  .contact-section {
+    width: 100%;
+    padding: 8rem 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    position: relative;
   }
 
   .contact-grid {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
     gap: 6rem;
+    margin-top: 4rem;
   }
 
   .contact-form-section h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    color: var(--white);
+    font-size: 1.8rem;
+    margin-bottom: 3rem;
+    color: white;
   }
 
   .contact-form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 2rem;
   }
 
   .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    position: relative;
   }
 
   .form-group label {
     font-size: 0.9rem;
+    color: #66ccff;
+    margin-bottom: 0.5rem;
+    display: block;
     font-weight: 500;
-    color: var(--gray-400);
   }
 
   .form-group input,
   .form-group select,
   .form-group textarea {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
-    color: var(--white);
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 1rem 1.5rem;
-    transition: var(--transition);
     width: 100%;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
   }
 
   .form-group input:focus,
   .form-group select:focus,
   .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    border-color: #0066cc;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
   }
 
   .form-group input::placeholder,
   .form-group textarea::placeholder {
-    color: var(--gray-500);
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .form-group textarea {
-    resize: vertical;
     min-height: 120px;
+    resize: vertical;
   }
 
   .contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
   }
 
   .contact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    margin-bottom: 2.5rem;
+    transition: all 0.3s ease;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .contact-icon {
-    width: 48px;
-    height: 48px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-light);
-    flex-shrink: 0;
+  .contact-item:hover {
+    transform: translateX(10px);
+    border-bottom-color: rgba(0, 102, 204, 0.3);
   }
 
-  .contact-details h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--gray-400);
-    margin-bottom: 0.25rem;
+  .contact-item h4 {
+    font-size: 0.8rem;
+    margin-bottom: 0.8rem;
+    opacity: 0.6;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    color: #66ccff;
   }
 
-  .contact-details a,
-  .contact-details span {
-    color: var(--white);
-    text-decoration: none;
+  .contact-item a,
+  .contact-item span {
     font-size: 1.1rem;
-    transition: var(--transition);
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: block;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
-  .contact-details a:hover {
-    color: var(--primary-light);
+  .contact-item a:hover {
+    color: #66ccff;
+  }
+
+  .social-section {
+    margin-bottom: 4rem;
   }
 
   .social-section h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #66ccff;
   }
 
   .social-links {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 1rem;
   }
 
   .social-link {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
-    color: var(--white);
+    gap: 1.5rem;
+    color: white;
     text-decoration: none;
-    transition: var(--transition);
+    font-size: 1.1rem;
+    padding: 1rem 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .social-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 102, 204, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .social-link:hover::before {
+    left: 100%;
   }
 
   .social-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--primary);
-    transform: translateX(5px);
+    color: #66ccff;
+    transform: translateX(15px);
+    border-bottom-color: rgba(0, 102, 204, 0.3);
   }
 
   .social-number {
-    font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: var(--gray-500);
+    opacity: 0.4;
+    min-width: 30px;
   }
 
-  .social-name {
+  .social-text {
     flex: 1;
-    text-align: left;
-    margin-left: 1rem;
-    font-weight: 500;
+  }
+
+  .social-arrow {
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover .social-arrow {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .availability {
-    padding: 1.5rem;
-    background: rgba(0, 255, 136, 0.05);
-    border: 1px solid rgba(0, 255, 136, 0.2);
-    border-radius: var(--radius-lg);
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(102, 204, 255, 0.05));
+    border: 1px solid rgba(0, 102, 204, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .availability:hover {
+    border-color: rgba(0, 102, 204, 0.4);
+    transform: translateY(-2px);
   }
 
   .status-indicator {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .status-dot {
@@ -1693,158 +1832,134 @@ const styles = `
     height: 12px;
     background: #00ff88;
     border-radius: 50%;
-    animation: pulse 2s infinite;
-    flex-shrink: 0;
+    position: relative;
+    animation: statusPulse 2s infinite;
+  }
+
+  .status-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 255, 136, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: statusRipple 2s infinite;
+  }
+
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  @keyframes statusRipple {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
   }
 
   .status-indicator span {
-    color: var(--white);
+    font-size: 1rem;
+    color: white;
     font-weight: 500;
   }
 
-  /* Footer */
+  /* Enhanced Footer */
   .footer {
-    background: var(--black);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
     padding: 3rem 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
   }
 
-  .footer-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #0066cc, transparent);
   }
 
   .footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
     flex-wrap: wrap;
     gap: 2rem;
-  }
-
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-weight: 600;
-  }
-
-  .footer-year {
-    color: var(--gray-500);
-    font-weight: 400;
+    color: white;
   }
 
   .footer-links {
     display: flex;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+    gap: 3rem;
   }
 
-  .footer-links button,
   .footer-links a {
-    background: none;
-    border: none;
-    color: var(--gray-400);
-    font-family: inherit;
-    font-size: 0.9rem;
-    cursor: pointer;
+    color: white;
     text-decoration: none;
-    transition: var(--transition);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    position: relative;
   }
 
-  .footer-links button:hover,
+  .footer-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #0066cc;
+    transition: width 0.3s ease;
+  }
+
   .footer-links a:hover {
-    color: var(--white);
-  }
-
-  /* Animations */
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideDown {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  @keyframes scroll-move {
-    0% { transform: translateY(-30px); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateY(30px); opacity: 0; }
-  }
-
-  /* AOS (Animate On Scroll) Styles */
-  [data-aos] {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  [data-aos].aos-animate {
     opacity: 1;
-    transform: translateY(0);
+    color: #66ccff;
+  }
+
+  .footer-links a:hover::after {
+    width: 100%;
   }
 
   /* Responsive Design */
   @media (max-width: 1200px) {
     .container {
-      max-width: calc(100vw - 3rem);
-      padding: 0 1.5rem;
-    }
-
-    .nav-container {
-      padding: 1.5rem 1.5rem;
-    }
-
-    .floating-menu {
-      right: 1.5rem;
+      padding: 0 2rem;
     }
 
     .hero-scroll {
-      right: 1.5rem;
+      right: 2rem;
+    }
+
+    .floating-menu {
+      right: 2rem;
+    }
+
+    .about-grid {
+      gap: 4rem;
+    }
+
+    .contact-grid {
+      gap: 4rem;
     }
   }
 
   @media (max-width: 900px) {
-    .nav-menu {
+  .nav-menu {
       display: none;
     }
 
-    .nav-mobile {
+    .nav-right-mobile {
       display: block;
-    }
-
-    .about-grid,
-    .contact-grid {
-      grid-template-columns: 1fr;
-      gap: 4rem;
-    }
-
-    .about-sidebar {
-      position: relative;
-      top: auto;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 2rem;
     }
 
     .floating-menu {
@@ -1852,99 +1967,44 @@ const styles = `
       right: 1.5rem;
     }
 
-    .floating-btn {
-      width: 50px;
-      height: 50px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      max-width: calc(100vw - 2rem);
-      padding: 0 1rem;
+    .floating-menu-button {
+      width: 56px;
+      height: 56px;
     }
 
-    .nav-container {
-      padding: 1rem;
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 4rem;
     }
 
-    section {
-      padding: 4rem 0 3rem;
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 4rem;
     }
 
-    .section-header {
-      margin-bottom: 4rem;
+    .about-sidebar {
+      position: relative;
     }
 
-    .hero {
-      min-height: 100vh;
-      padding: 8rem 0 4rem;
+    .work-grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     }
 
-    .hero-title {
-      font-size: clamp(2.5rem, 10vw, 4rem);
-      margin-bottom: 2rem;
-    }
-
-    .hero-meta {
+    .hero-subtitle {
       flex-direction: column;
-      align-items: flex-start;
       gap: 1rem;
     }
 
-    .meta-divider {
+    .location::before {
       display: none;
     }
 
-    .hero-description {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
-
-    .hero-actions {
-      flex-direction: column;
-      align-items: stretch;
-      width: 100%;
-    }
-
-    .btn {
-      justify-content: center;
-      width: 100%;
-    }
-
-    .hero-scroll {
-      display: none;
-    }
-
-    .projects-grid {
-      gap: 2rem;
-    }
-
-    .project-info {
-      padding: 1.5rem;
+    .location {
+      padding-left: 0;
     }
 
     .menu-item {
-      font-size: 1.25rem;
-      padding: 1.25rem 1.5rem;
-    }
-
-    .menu-header h2 {
-      font-size: 2rem;
-    }
-
-    .floating-menu {
-      top: 1rem;
-      right: 1rem;
-    }
-
-    .floating-btn {
-      width: 45px;
-      height: 45px;
-    }
-
-    .contact-form {
-      gap: 1.5rem;
+      font-size: clamp(2rem, 5vw, 3rem);
     }
 
     .footer-content {
@@ -1954,153 +2014,161 @@ const styles = `
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     .container {
-      padding: 0 0.75rem;
+      padding: 0 1.5rem;
     }
 
     .nav-container {
-      padding: 0.75rem;
+      padding: 1rem 1.5rem;
     }
 
-    .hero-title {
-      font-size: clamp(2rem, 9vw, 3rem);
+    .hero {
+      padding: 6rem 0 4rem;
+      min-height: 100vh;
     }
 
-    .hero-description {
-      font-size: 1rem;
+    .hero-scroll {
+      display: none;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem;
     }
 
     .btn {
-      padding: 0.875rem 1.5rem;
-      font-size: 0.9rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .work-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .floating-menu {
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .floating-menu-button {
+      width: 50px;
+      height: 50px;
     }
 
     .section-title {
-      font-size: clamp(2rem, 8vw, 2.5rem);
+      font-size: clamp(2rem, 6vw, 3.5rem);
     }
 
-    .project-image {
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+
+    .contact-form {
+      gap: 1.5rem;
+    }
+
+    .social-links {
+      gap: 0.5rem;
+    }
+
+    .footer-links {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 1rem;
+    }
+
+    .nav-container {
+      padding: 1rem;
+    }
+
+    .floating-menu {
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
+    .floating-menu-button {
+      width: 44px;
+      height: 44px;
+    }
+
+    .hero-badge {
+      font-size: 0.8rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .btn {
+      padding: 0.9rem 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .work-image {
       height: 200px;
     }
 
-    .project-number {
+    .work-number {
       font-size: 3rem;
     }
 
-    .project-info {
-      padding: 1rem;
-    }
-
     .menu-item {
-      font-size: 1.1rem;
-      padding: 1rem;
+      font-size: 1.8rem;
+      margin: 1rem 0;
+      gap: 1rem;
     }
 
-    .item-text {
-      margin-left: 1rem;
+    .section-header {
+      margin-bottom: 4rem;
     }
 
-    .menu-header h2 {
-      font-size: 1.75rem;
-    }
-
-    .floating-btn {
-      width: 40px;
-      height: 40px;
-    }
-
-    .floating-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .about-text p {
-      font-size: 1rem;
-    }
-
-    .experience-timeline {
-      padding-left: 1.5rem;
-    }
-
-    .experience-dot {
-      left: -1.5rem;
-      width: 10px;
-      height: 10px;
+    .work-cta {
+      margin-top: 4rem;
     }
 
     .image-placeholder {
       height: 300px;
     }
 
-    .contact-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
+    .about-text p {
+      font-size: 1.1rem;
     }
 
-    .contact-icon {
-      width: 40px;
-      height: 40px;
+    .experience-item {
+      gap: 1rem;
     }
 
-    .social-link {
-      padding: 0.75rem;
-    }
-  }
-
-  /* Ultra-small screens */
-  @media (max-width: 320px) {
-    .floating-menu {
-      top: 0.5rem;
-      right: 0.5rem;
+    .skill-tags {
+      gap: 0.5rem;
     }
 
-    .floating-btn {
-      width: 36px;
-      height: 36px;
-    }
-
-    .floating-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .hero-title {
-      font-size: clamp(1.75rem, 8vw, 2.5rem);
-    }
-
-    .btn {
-      padding: 0.75rem 1rem;
+    .skill-tag {
+      padding: 0.4rem 0.8rem;
       font-size: 0.85rem;
     }
 
-    .menu-item {
-      font-size: 1rem;
-      padding: 0.875rem;
+    .contact-text {
+      font-size: 1.1rem;
     }
 
-    .project-image {
-      height: 180px;
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 1rem;
     }
 
-    .project-number {
-      font-size: 2.5rem;
-    }
-  }
-
-  /* High-DPI Display Optimizations */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .gradient-orb {
-      filter: blur(40px);
-    }
-
-    .floating-btn {
-      border-width: 1px;
+    .availability {
+      padding: 1.5rem;
     }
   }
 
-  /* Reduced Motion Support */
+  /* Accessibility and Performance */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -2109,159 +2177,103 @@ const styles = `
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-
-    .scroll-line {
-      animation: none;
-    }
-
-    .gradient-orb {
-      animation: none;
-    }
-
-    .badge-dot,
-    .status-dot {
-      animation: none;
-    }
   }
 
-  /* High Contrast Mode Support */
-  @media (prefers-contrast: high) {
-    .btn-outline {
-      border-color: var(--white);
-    }
-
-    .project-card {
-      border-color: var(--white);
-    }
-
-    .contact-item {
-      border: 1px solid var(--white);
-      border-radius: var(--radius-lg);
-      padding: 1rem;
-    }
-  }
-
-  /* Dark Mode Override (if system prefers light) */
   @media (prefers-color-scheme: light) {
     /* Keep dark theme regardless of system preference */
   }
 
-  /* Print Styles */
+  /* Focus states for accessibility */
+  .btn:focus,
+  .nav-link:focus,
+  .menu-item:focus,
+  .social-link:focus,
+  .floating-menu-button:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .btn {
+      border-width: 3px;
+    }
+    
+    .nav-link.active {
+      background: #ffffff;
+      color: #000000;
+    }
+    
+    .skill-tag {
+      border-width: 2px;
+    }
+  }
+
+  /* Print styles */
   @media print {
     .nav,
     .floating-menu,
     .menu-overlay,
     .hero-scroll {
-      display: none !important;
+      display: none;
     }
-
+    
     .hero {
       min-height: auto;
       padding: 2rem 0;
     }
-
-    section {
-      padding: 2rem 0;
-      page-break-inside: avoid;
-    }
-
-    .project-card,
-    .experience-item {
-      page-break-inside: avoid;
-    }
-
+    
     * {
-      background: transparent !important;
-      color: #000 !important;
-      box-shadow: none !important;
+      animation: none !important;
+      transition: none !important;
     }
   }
 
-  /* Focus Styles for Accessibility */
-  .btn:focus,
-  .nav-link:focus,
-  .menu-item:focus,
-  .floating-btn:focus,
-  input:focus,
-  select:focus,
-  textarea:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
-
-  /* Loading State */
-  .portfolio:not(.loaded) * {
-    transition: none !important;
-    animation: none !important;
-  }
-
-  /* Scroll Behavior */
-  html {
-    scroll-padding-top: 100px;
-  }
-
-  /* Selection Styles */
-  ::selection {
-    background: var(--primary);
-    color: var(--white);
-  }
-
-  ::-moz-selection {
-    background: var(--primary);
-    color: var(--white);
-  }
-
-  /* Scrollbar Styles */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--gray-900);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--gray-600);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-500);
-  }
-
-  /* Ensure no text overflow on any device */
-  h1, h2, h3, h4, h5, h6,
-  p, span, div, a, button,
-  input, textarea, select {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    max-width: 100%;
-  }
-
-  /* Prevent horizontal scroll */
-  html, body, #root, .portfolio {
+  /* Ensure no content overflow on any device */
+  html,
+  body,
+  #root,
+  .portfolio {
     overflow-x: hidden;
     max-width: 100vw;
   }
 
-  /* Utility Classes */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .container {
+    max-width: min(1400px, 100vw);
   }
 
-  .no-scroll {
-    overflow: hidden;
+  /* Text breaking for all elements */
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Prevent specific elements from breaking */
+  .skill-tag,
+  .btn,
+  .nav-link,
+  .menu-item {
+    hyphens: none;
+  }
+
+  /* Long URLs and emails should break */
+  .contact-item a,
+  .social-link,
+  .hero-description,
+  .work-description,
+  .about-text p,
+  .contact-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 `;
 
 export default Portfolio;
- 
