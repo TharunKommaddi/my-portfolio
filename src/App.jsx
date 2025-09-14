@@ -2437,6 +2437,13 @@ const styles = `
   color: #66ccff;
 }
 
+
+.contact-form button[type="submit"] {
+  width: auto;
+  align-self: flex-start;
+}
+
+
 `;
 
 export default Portfolio;
