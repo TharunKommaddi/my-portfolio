@@ -61,12 +61,10 @@ uOpen, setIsMenuOpen] = useState(false);
         <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
 
-<div className="nav-left">
-
           
 <div className="nav-left">
-  <span className="logo" onClick={tog=> navigateTo('home')}>
-    <span className="logo-text">©codeby Tanuja</span>
+  <span className="logo" onClick={() => navigateTo('home')}>
+    <span className="logo-text">©code by Tanuja</span>
     <span className="logo-dot"></span>
   </span>
 </div>
