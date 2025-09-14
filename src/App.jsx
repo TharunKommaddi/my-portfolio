@@ -96,7 +96,8 @@ const Portfolio = () => {
         </nav>
 
         {/* Enhanced Floating Menu */}
-        <div className={`floating-menu ${isMenuOpen ? 'active' : ''}`}>
+{/*         <div className={`floating-menu ${isMenuOpen ? 'active' : ''}`}> */}
+          <div className={`floating-menu ${isMenuOpen ? 'active' : ''} ${isScrolled ? 'show-on-scroll' : ''}`}>
           <button className="floating-menu-button" onClick={toggleMenu}>
             <span className="floating-inner">
               <span className="floating-line"></span>
@@ -2370,9 +2371,25 @@ const styles = `
   }
 
 /* Hide floating menu on desktop (above 900px) */
+// @media (min-width: 901px) {
+//   .floating-menu {
+//     display: none;
+//   }
+// }
+
+
+/* Desktop floating menu behavior */
 @media (min-width: 901px) {
+  .nav {
+    position: relative;
+  }
+  
   .floating-menu {
     display: none;
+  }
+  
+  .floating-menu.show-on-scroll {
+    display: block;
   }
 }
 
