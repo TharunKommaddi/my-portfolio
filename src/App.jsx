@@ -359,97 +359,129 @@ const AboutSection = () => (
   </section>
 );
 
-const ContactSection = () => (
-  <section className="contact-section">
-    <div className="container">
-      <div className="contact-content">
-        <span className="section-number">04</span>
-        <h2 className="section-title">Let's Build Something Amazing</h2>
-        <p className="contact-text">
-          Ready to turn your ideas into reality? I'm always excited to work on 
-          challenging projects and collaborate with innovative teams.
-        </p>
-        
-        <div className="contact-grid">
-          <div className="contact-form-section">
-            <h3>Send me a message</h3>
-            <div className="contact-form">
-              {[
-                { label: "Name", type: "text", placeholder: "Your name" },
-                { label: "Email", type: "email", placeholder: "your.email@example.com" },
-              ].map((field, index) => (
-                <div key={index} className="form-group">
-                  <label>{field.label}</label>
-                  <input type={field.type} placeholder={field.placeholder} />
-                </div>
-              ))}
-              <div className="form-group">
-                <label>Project Type</label>
-                <select>
-                  <option>Select project type</option>
-                  <option>Full Stack Web Application</option>
-                  <option>Frontend Development</option>
-                  <option>Backend API Development</option>
-                  <option>Website Redesign</option>
-                  <option>E-commerce Solution</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Message</label>
-                <textarea placeholder="Tell me about your project..."></textarea>
-              </div>
-              <button type="submit" className="btn btn-primary">
-                <span>Send Message</span>
-                <span className="btn-arrow">→</span>
-              </button>
-            </div>
-          </div>
+const ContactSection = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState('Select project type');
+
+  const projectTypes = [
+    'Full Stack Web Application',
+    'Frontend Development', 
+    'Backend API Development',
+    'Website Redesign',
+    'E-commerce Solution',
+    'Other'
+  ];
+
+  return (
+    <section className="contact-section">
+      <div className="container">
+        <div className="contact-content">
+          <span className="section-number">04</span>
+          <h2 className="section-title">Let's Build Something Amazing</h2>
+          <p className="contact-text">
+            Ready to turn your ideas into reality? I'm always excited to work on 
+            challenging projects and collaborate with innovative teams.
+          </p>
           
-          <div className="contact-info-section">
-            <div className="contact-info">
-              {[
-                { label: "Email", value: "tanuja.dev@example.com", href: "mailto:tanuja.dev@example.com" },
-                { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
-                { label: "Location", value: "Bangalore, India" },
-                { label: "Response Time", value: "Usually within 24 hours" }
-              ].map((item, index) => (
-                <div key={index} className="contact-item">
-                  <h4>{item.label}</h4>
-                  {item.href ? (
-                    <a href={item.href}>{item.value}</a>
-                  ) : (
-                    <span>{item.value}</span>
-                  )}
+          <div className="contact-grid">
+            <div className="contact-form-section">
+              <h3>Send me a message</h3>
+              <div className="contact-form">
+                {[
+                  { label: "Name", type: "text", placeholder: "Your name" },
+                  { label: "Email", type: "email", placeholder: "your.email@example.com" },
+                ].map((field, index) => (
+                  <div key={index} className="form-group">
+                    <label>{field.label}</label>
+                    <input type={field.type} placeholder={field.placeholder} />
+                  </div>
+                ))}
+                <div className="form-group">
+                  <label>Project Type</label>
+                  <div className="custom-dropdown">
+                    <div 
+                      className={`dropdown-trigger ${isDropdownOpen ? 'active' : ''}`}
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      <span>{selectedProject}</span>
+                      <span className="dropdown-arrow">↓</span>
+                    </div>
+                    {isDropdownOpen && (
+                      <div className="dropdown-options">
+                        {projectTypes.map((type, index) => (
+                          <div 
+                            key={index}
+                            className="dropdown-option"
+                            onClick={() => {
+                              setSelectedProject(type);
+                              setIsDropdownOpen(false);
+                            }}
+                          >
+                            {type}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+                <div className="form-group">
+                  <label>Message</label>
+                  <textarea placeholder="Tell me about your project..."></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  <span>Send Message</span>
+                  <span className="btn-arrow">→</span>
+                </button>
+              </div>
             </div>
             
-            <div className="social-section">
-              <h4>Connect with me</h4>
-              <div className="social-links">
-                {["LinkedIn", "GitHub", "Twitter", "Dev.to"].map((platform, index) => (
-                  <a key={index} href="#" className="social-link">
-                    <span className="social-number">0{index + 1}</span>
-                    <span className="social-text">{platform}</span>
-                    <span className="social-arrow">↗</span>
-                  </a>
+            <div className="contact-info-section">
+              <div className="contact-info">
+                {[
+                  { label: "Email", value: "tanuja.dev@example.com", href: "mailto:tanuja.dev@example.com" },
+                  { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
+                  { label: "Location", value: "Bangalore, India" },
+                  { label: "Response Time", value: "Usually within 24 hours" }
+                ].map((item, index) => (
+                  <div key={index} className="contact-item">
+                    <h4>{item.label}</h4>
+                    {item.href ? (
+                      <a href={item.href}>{item.value}</a>
+                    ) : (
+                      <span>{item.value}</span>
+                    )}
+                  </div>
                 ))}
               </div>
-            </div>
-            
-            <div className="availability">
-              <div className="status-indicator">
-                <div className="status-dot"></div>
-                <span>Available for new projects</span>
+              
+              <div className="social-section">
+                <h4>Connect with me</h4>
+                <div className="social-links">
+                  {["LinkedIn", "GitHub", "Twitter", "Dev.to"].map((platform, index) => (
+                    <a key={index} href="#" className="social-link">
+                      <span className="social-number">0{index + 1}</span>
+                      <span className="social-text">{platform}</span>
+                      <span className="social-arrow">↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="availability">
+                <div className="status-indicator">
+                  <div className="status-dot"></div>
+                  <span>Available for new projects</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
+
+
 
 const styles = `
   /* Reset and Base Styles */
@@ -2339,7 +2371,71 @@ const styles = `
   outline: none;
 }
 
+.custom-dropdown {
+  position: relative;
+}
 
+.dropdown-trigger {
+  width: 100%;
+  padding: 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.dropdown-trigger:hover,
+.dropdown-trigger.active {
+  border-color: #0066cc;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+
+.dropdown-trigger.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.95);
+  border: 2px solid rgba(0, 102, 204, 0.3);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-option {
+  padding: 1rem 1.2rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background: rgba(0, 102, 204, 0.2);
+  color: #66ccff;
+}
 
 `;
 
