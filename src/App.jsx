@@ -2274,6 +2274,23 @@ const styles = `
     word-break: break-word;
     overflow-wrap: break-word;
   }
+
+/* Hide floating menu on desktop (above 900px) */
+@media (min-width: 901px) {
+  .floating-menu {
+    display: none;
+  }
+}
+
+/* Show floating menu only on mobile (900px and below) */
+@media (max-width: 900px) {
+  .floating-menu {
+    display: block;
+  }
+}
+
+
+
 `;
 
 export default Portfolio;
