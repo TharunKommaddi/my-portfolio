@@ -2290,6 +2290,17 @@ const styles = `
 }
 
 
+@media (max-width: 900px) {
+  .nav-right-mobile {
+    display: none !important;
+  }
+  
+  .menu-toggle {
+    display: none !important;
+  }
+}
+
+
 
 `;
 
