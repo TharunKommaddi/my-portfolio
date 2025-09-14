@@ -130,7 +130,7 @@ const Portfolio = () => {
 
         <footer className="footer">
           <div className="footer-content">
-            <p>© 2025 Tanuja. Crafted with precision.</p>
+            <p>2025© Edition, Tanuja. Crafted with precision.</p>
             <div className="footer-links">
               <a href="#" onClick={() => navigateTo('about')}>Privacy</a>
               <a href="#" onClick={() => navigateTo('contact')}>Terms</a>
