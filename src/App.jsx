@@ -562,6 +562,7 @@ const styles = `
     background: #0066cc;
     border-radius: 50%;
     transition: all 0.3s ease;
+    margin-top: 5px;
   }
 
   .logo:hover .logo-dot {
