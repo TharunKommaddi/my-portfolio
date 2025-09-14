@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
-const [logoToggled, setLogoToggled] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,9 +21,26 @@ const [logoToggled, setLogoToggled] = useState(false);
   };
 
 
-const toggleLogo = () => {
-  setLogoToggled(!logoToggled);
-};
+uOpen, setIsMenuOpen] = useState(false);
+  const [currentSection, setCurrentSection] = useState('home');
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
+  const navigateTo = (section) => {
+    setCurrentSection(section);
+    setIsMenuOpen(false);
+  };
+
+
 
 
 
@@ -46,17 +62,11 @@ const toggleLogo = () => {
           <div className="nav-container">
           
 <div className="nav-left">
-  <span className="logo" onClick={toggleLogo}>
-    <span className={`logo-text ${logoToggled ? 'fade-out' : 'fade-in'}`}>
-      ©code by Tanuja
-    </span>
-    <span className={`logo-text-alt ${logoToggled ? 'fade-in' : 'fade-out'}`}>
-      Tanuja Somashekhar
-    </span>
+  <span className="logo" onClick={tog=> navigateTo('home')}>
+    <span className="logo-text">©codeby Tanuja</span>
     <span className="logo-dot"></span>
   </span>
 </div>
-
 
             
             <div className="nav-menu">
@@ -506,34 +516,13 @@ const styles = `
     transition: all 0.3s ease;
   }
 
-  /*.logo-text {
+  .logo-text {
     font-size: 1.25rem;
     font-weight: 600;
     color: white;
     letter-spacing: -0.02em;
   }
-*/
 
-.logo-text,
-.logo-text-alt {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: opacity 0.4s ease;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-.fade-in {
-  opacity: 1;
-}
-
-.fade-out {
-  opacity: 0;
-}
   .logo-dot {
     width: 8px;
     height: 8px;
