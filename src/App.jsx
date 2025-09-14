@@ -1606,21 +1606,55 @@ const styles = `
   }
 
   .image-placeholder {
-    width: 100%;
-    height: 400px;
+    width: 300px;
+    height: 300px;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 20px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
     transition: all 0.5s ease;
+    margin: 0 auto;
+    animation: floatPhoto 6s ease-in-out infinite;
   }
 
   .image-placeholder:hover {
-    transform: scale(1.02);
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
   }
+
+
+  .image-placeholder::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
+  animation: rotateGlow 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  }
+  
+  .image-placeholder:hover::before {
+    opacity: 1;
+  }
+  
+  @keyframes floatPhoto {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+
+
 
   .image-overlay {
     position: absolute;
