@@ -2263,8 +2263,5 @@ const styles = `
   }
 `;
 
-export default Portfolio;1) {
-    transform: rotate(45deg) translate(6px, 6px);
-  }
-
+export default Portfolio;
  
