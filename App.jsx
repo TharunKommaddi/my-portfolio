@@ -1763,6 +1763,22 @@ const styles = `
     overflow-wrap: break-word;
     hyphens: auto;
   }
+
+
+.menu-item:focus {
+  outline: none;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.menu-item:focus-visible {
+  outline: none;
+}
+
+
+
+
 `;
 
 export default Portfolio;
