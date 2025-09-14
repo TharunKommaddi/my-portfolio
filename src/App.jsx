@@ -21,6 +21,13 @@ const [logoToggled, setLogoToggled] = useState(false);
     setIsMenuOpen(false);
   };
 
+
+const toggleLogo = () => {
+  setLogoToggled(!logoToggled);
+};
+
+
+
   const renderContent = () => {
     switch (currentSection) {
       case 'work': return <WorkSection navigateTo={navigateTo} />;
