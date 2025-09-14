@@ -38,7 +38,7 @@ const Portfolio = () => {
           <div className="nav-container">
             <div className="nav-left">
               <span className="logo" onClick={() => navigateTo('home')}>
-                <span className="logo-text">Tanuja</span>
+                <span className="logo-text">© Code by Tanuja</span>
                 <span className="logo-dot"></span>
               </span>
             </div>
