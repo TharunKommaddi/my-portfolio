@@ -1265,7 +1265,7 @@ const styles = `
   /* Contact Section */
   .contact-section {
     width: 100%;
-    padding: 8rem 0;
+    padding: 4rem 0 8rem 0;
     background: #0a0a0a;
     color: white;
     overflow: hidden;
