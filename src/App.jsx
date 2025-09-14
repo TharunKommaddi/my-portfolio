@@ -60,6 +60,9 @@ uOpen, setIsMenuOpen] = useState(false);
         {/* Enhanced Navigation */}
         <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
+
+<div className="nav-left">
+
           
 <div className="nav-left">
   <span className="logo" onClick={tog=> navigateTo('home')}>
