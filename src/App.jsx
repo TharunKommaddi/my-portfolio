@@ -2438,9 +2438,9 @@ const styles = `
 }
 
 
-.contact-form button[type="submit"] {
-  width: auto;
-  align-self: flex-start;
+.contact-form button.btn.btn-primary {
+  width: max-content;
+  justify-self: start;
 }
 
 
