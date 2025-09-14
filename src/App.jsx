@@ -44,13 +44,7 @@ const toggleLogo = () => {
         {/* Enhanced Navigation */}
         <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
-           <!-- <div className="nav-left">
-              <span className="logo" onClick={() => navigateTo('home')}>
-                <span className="logo-text">© Code by Tanuja</span>
-                <span className="logo-dot"></span>
-              </span>
-            </div>-->
-
+          
 <div className="nav-left">
   <span className="logo" onClick={toggleLogo}>
     <span className={`logo-text ${logoToggled ? 'fade-out' : 'fade-in'}`}>
