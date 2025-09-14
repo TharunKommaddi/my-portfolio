@@ -21,24 +21,24 @@ const Portfolio = () => {
   };
 
 
-uOpen, setIsMenuOpen] = useState(false);
-  const [currentSection, setCurrentSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
+// uOpen, setIsMenuOpen] = useState(false);
+//   const [currentSection, setCurrentSection] = useState('home');
+//   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+//   useEffect(() => {
+//     const handleScroll = () => {
+//       setIsScrolled(window.scrollY > 50);
+//     };
+//     window.addEventListener('scroll', handleScroll);
+//     return () => window.removeEventListener('scroll', handleScroll);
+//   }, []);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => setIsMenuOpen(false);
-  const navigateTo = (section) => {
-    setCurrentSection(section);
-    setIsMenuOpen(false);
-  };
+//   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+//   const closeMenu = () => setIsMenuOpen(false);
+//   const navigateTo = (section) => {
+//     setCurrentSection(section);
+//     setIsMenuOpen(false);
+//   };
 
 
 
