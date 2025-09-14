@@ -2301,6 +2301,18 @@ const styles = `
 }
 
 
+.menu-item:focus {
+  outline: none;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.menu-item:focus-visible {
+  outline: none;
+}
+
+
 
 `;
 
