@@ -2098,7 +2098,7 @@ const styles = `
     }
 
     .btn {
-      width: 100%;
+      width: auto;
       justify-content: center;
     }
 
