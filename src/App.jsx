@@ -1,9 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+// Custom hook for magnetic effects
+const useMagnetic = (strength = 0.3) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const handleMouseMove = (e) => {
+      const rect = element.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const deltaX = e.clientX - centerX;
+      const deltaY = e.clientY - centerY;
+      
+      const moveX = deltaX * strength;
+      const moveY = deltaY * strength;
+      
+      element.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    };
+
+    const handleMouseLeave = () => {
+      element.style.transform = 'translate(0, 0)';
+    };
+
+    element.addEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      element.removeEventListener('mousemove', handleMouseMove);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [strength]);
+
+  return ref;
+};
 
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Magnetic refs
+  const logoRef = useMagnetic(0.2);
+  const floatingMenuRef = useMagnetic(0.4);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,30 +61,6 @@ const Portfolio = () => {
     setCurrentSection(section);
     setIsMenuOpen(false);
   };
-
-
-// uOpen, setIsMenuOpen] = useState(false);
-//   const [currentSection, setCurrentSection] = useState('home');
-//   const [isScrolled, setIsScrolled] = useState(false);
-
-//   useEffect(() => {
-//     const handleScroll = () => {
-//       setIsScrolled(window.scrollY > 50);
-//     };
-//     window.addEventListener('scroll', handleScroll);
-//     return () => window.removeEventListener('scroll', handleScroll);
-//   }, []);
-
-//   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-//   const closeMenu = () => setIsMenuOpen(false);
-//   const navigateTo = (section) => {
-//     setCurrentSection(section);
-//     setIsMenuOpen(false);
-//   };
-
-
-
-
 
   const renderContent = () => {
     switch (currentSection) {
@@ -60,27 +78,30 @@ const Portfolio = () => {
         {/* Enhanced Navigation */}
         <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
-
-          
-<div className="nav-left">
-  <span className="logo" onClick={() => navigateTo('home')}>
-    <span className="logo-text">©code by Tanuja</span>
-    <span className="logo-dot"></span>
-  </span>
-</div>
-
+            <div className="nav-left">
+              <span ref={logoRef} className="logo magnetic-element" onClick={() => navigateTo('home')}>
+                <span className="logo-text">©code by Tanuja</span>
+                <span className="logo-dot"></span>
+              </span>
+            </div>
             
             <div className="nav-menu">
-              {['home', 'work', 'about', 'contact'].map((item, index) => (
-                <button 
-                  key={item}
-                  className={`nav-link ${currentSection === item ? 'active' : ''}`}
-                  onClick={() => navigateTo(item)}
-                >
-                  <span className="nav-number">0{index + 1}</span>
-                  <span className="nav-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
-                </button>
-              ))}
+              {['home', 'work', 'about', 'contact'].map((item, index) => {
+                const NavLink = () => {
+                  const navRef = useMagnetic(0.25);
+                  return (
+                    <button 
+                      ref={navRef}
+                      className={`nav-link magnetic-element ${currentSection === item ? 'active' : ''}`}
+                      onClick={() => navigateTo(item)}
+                    >
+                      <span className="nav-number">0{index + 1}</span>
+                      <span className="nav-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+                    </button>
+                  );
+                };
+                return <NavLink key={item} />;
+              })}
             </div>
 
             <div className="nav-right-mobile">
@@ -96,9 +117,8 @@ const Portfolio = () => {
         </nav>
 
         {/* Enhanced Floating Menu */}
-{/*         <div className={`floating-menu ${isMenuOpen ? 'active' : ''}`}> */}
-          <div className={`floating-menu ${isMenuOpen ? 'active' : ''} ${isScrolled ? 'show-on-scroll' : ''}`}>
-          <button className="floating-menu-button" onClick={toggleMenu}>
+        <div className={`floating-menu ${isMenuOpen ? 'active' : ''} ${isScrolled ? 'show-on-scroll' : ''}`}>
+          <button ref={floatingMenuRef} className="floating-menu-button magnetic-element" onClick={toggleMenu}>
             <span className="floating-inner">
               <span className="floating-line"></span>
               <span className="floating-line"></span>
@@ -110,18 +130,25 @@ const Portfolio = () => {
         <div className={`menu-overlay ${isMenuOpen ? 'active' : ''}`} onClick={closeMenu}>
           <div className="menu-content" onClick={(e) => e.stopPropagation()}>
             <div className="menu-background"></div>
-            {['home', 'work', 'about', 'contact'].map((item, index) => (
-              <button 
-                key={item}
-                className="menu-item" 
-                onClick={() => navigateTo(item)}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <span className="menu-number">0{index + 1}</span>
-                <span className="menu-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
-                <span className="menu-arrow">→</span>
-              </button>
-            ))}
+            {['home', 'work', 'about', 'contact'].map((item, index) => {
+              const MenuItem = () => {
+                const menuRef = useMagnetic(0.3);
+                return (
+                  <button 
+                    ref={menuRef}
+                    key={item}
+                    className="menu-item magnetic-element" 
+                    onClick={() => navigateTo(item)}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <span className="menu-number">0{index + 1}</span>
+                    <span className="menu-text">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+                    <span className="menu-arrow">→</span>
+                  </button>
+                );
+              };
+              return <MenuItem key={item} />;
+            })}
           </div>
         </div>
 
@@ -143,51 +170,59 @@ const Portfolio = () => {
   );
 };
 
-const HomeSection = ({ navigateTo }) => (
-  <section className="hero">
-    <div className="hero-background">
-      <div className="gradient-orb orb-1"></div>
-      <div className="gradient-orb orb-2"></div>
-    </div>
-    <div className="container">
-      <div className="hero-content">
-        <div className="hero-badge">
-          <span className="badge-dot"></span>
-          Available for new projects
+const HomeSection = ({ navigateTo }) => {
+  const primaryBtnRef = useMagnetic(0.3);
+  const secondaryBtnRef = useMagnetic(0.25);
+  const badgeRef = useMagnetic(0.2);
+
+  return (
+    <section className="hero">
+      <div className="hero-background">
+        <div className="gradient-orb orb-1"></div>
+        <div className="gradient-orb orb-2"></div>
+      </div>
+      <div className="container">
+        <div className="hero-content">
+          <div ref={badgeRef} className="hero-badge magnetic-element">
+            <span className="badge-dot"></span>
+            Available for new projects
+          </div>
+          <h1 className="hero-title">
+            <span className="title-line">Full Stack</span>
+            <span className="title-line title-outline">Developer</span>
+            <span className="title-line">& Problem Solver</span>
+          </h1>
+          <div className="hero-subtitle">
+            <span className="name">Tanuja</span>
+            <span className="location">Based in India</span>
+          </div>
+          <p className="hero-description">
+            I craft scalable web applications using modern technologies. 
+            Passionate about creating efficient solutions that bridge the gap 
+            between frontend aesthetics and backend functionality.
+          </p>
+          <div className="hero-actions">
+            <button ref={primaryBtnRef} className="btn btn-primary magnetic-element" onClick={() => navigateTo('work')}>
+              <span>View My Work</span>
+              <span className="btn-arrow">↗</span>
+            </button>
+            <button ref={secondaryBtnRef} className="btn btn-secondary magnetic-element" onClick={() => navigateTo('contact')}>
+              <span>Get in Touch</span>
+            </button>
+          </div>
         </div>
-        <h1 className="hero-title">
-          <span className="title-line">Full Stack</span>
-          <span className="title-line title-outline">Developer</span>
-          <span className="title-line">& Problem Solver</span>
-        </h1>
-        <div className="hero-subtitle">
-          <span className="name">Tanuja</span>
-          <span className="location">Based in India</span>
-        </div>
-        <p className="hero-description">
-          I craft scalable web applications using modern technologies. 
-          Passionate about creating efficient solutions that bridge the gap 
-          between frontend aesthetics and backend functionality.
-        </p>
-        <div className="hero-actions">
-          <button className="btn btn-primary" onClick={() => navigateTo('work')}>
-            <span>View My Work</span>
-            <span className="btn-arrow">↗</span>
-          </button>
-          <button className="btn btn-secondary" onClick={() => navigateTo('contact')}>
-            <span>Get in Touch</span>
-          </button>
+        <div className="hero-scroll">
+          <span>Scroll</span>
+          <div className="scroll-indicator"></div>
         </div>
       </div>
-      <div className="hero-scroll">
-        <span>Scroll</span>
-        <div className="scroll-indicator"></div>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const WorkSection = ({ navigateTo }) => {
+  const ctaBtnRef = useMagnetic(0.3);
+
   const projects = [
     { 
       title: "E-Commerce Platform", 
@@ -247,29 +282,35 @@ const WorkSection = ({ navigateTo }) => {
           </p>
         </div>
         <div className="work-grid">
-          {projects.map((item, index) => (
-            <div key={index} className="work-item">
-              <div className="work-image">
-                <div className="work-number">0{index + 1}</div>
-                <div className="work-overlay">
-                  <span className="view-project">View Project</span>
-                  <span className="project-arrow">↗</span>
+          {projects.map((item, index) => {
+            const WorkItem = () => {
+              const workRef = useMagnetic(0.2);
+              return (
+                <div ref={workRef} className="work-item magnetic-element">
+                  <div className="work-image">
+                    <div className="work-number">0{index + 1}</div>
+                    <div className="work-overlay">
+                      <span className="view-project">View Project</span>
+                      <span className="project-arrow">↗</span>
+                    </div>
+                    <div className="work-glow"></div>
+                  </div>
+                  <div className="work-info">
+                    <h3 className="work-title">{item.title}</h3>
+                    <p className="work-description">{item.description}</p>
+                    <div className="work-meta">
+                      <span className="work-tech">{item.tech}</span>
+                      <span className="work-year">{item.year}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="work-glow"></div>
-              </div>
-              <div className="work-info">
-                <h3 className="work-title">{item.title}</h3>
-                <p className="work-description">{item.description}</p>
-                <div className="work-meta">
-                  <span className="work-tech">{item.tech}</span>
-                  <span className="work-year">{item.year}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+              );
+            };
+            return <WorkItem key={index} />;
+          })}
         </div>
         <div className="work-cta">
-          <button className="btn btn-outline" onClick={() => navigateTo('contact')}>
+          <button ref={ctaBtnRef} className="btn btn-outline magnetic-element" onClick={() => navigateTo('contact')}>
             <span>Interested in working together?</span>
             <span className="btn-arrow">→</span>
           </button>
@@ -279,90 +320,99 @@ const WorkSection = ({ navigateTo }) => {
   );
 };
 
-const AboutSection = () => (
-  <section className="about-section">
-    <div className="container">
-      <div className="about-grid">
-        <div className="about-content">
-          <span className="section-number">03</span>
-          <h2 className="section-title">About Me</h2>
-          <div className="about-text">
-            <p>
-              Hi, I'm Tanuja! I'm a passionate Full Stack Web Developer with a love for 
-              creating digital solutions that make a difference. With expertise in both 
-              frontend and backend technologies, I enjoy the entire development lifecycle.
-            </p>
-            <p>
-              My journey in web development started with curiosity about how websites work, 
-              and it has evolved into a career focused on building scalable, user-centric 
-              applications. I believe in writing clean, maintainable code and staying 
-              updated with the latest technologies.
-            </p>
-            <p>
-              When I'm not coding, you'll find me exploring new frameworks, contributing 
-              to open source projects, or mentoring aspiring developers in my community.
-            </p>
-          </div>
-          
-          <div className="experience">
-            <h3>Experience</h3>
-            <div className="experience-item">
-              <div className="experience-dot"></div>
-              <div className="experience-content">
-                <h4>Full Stack Developer</h4>
-                <span>2022 - Present</span>
-                <p>Building modern web applications and leading development teams</p>
-              </div>
+const AboutSection = () => {
+  return (
+    <section className="about-section">
+      <div className="container">
+        <div className="about-grid">
+          <div className="about-content">
+            <span className="section-number">03</span>
+            <h2 className="section-title">About Me</h2>
+            <div className="about-text">
+              <p>
+                Hi, I'm Tanuja! I'm a passionate Full Stack Web Developer with a love for 
+                creating digital solutions that make a difference. With expertise in both 
+                frontend and backend technologies, I enjoy the entire development lifecycle.
+              </p>
+              <p>
+                My journey in web development started with curiosity about how websites work, 
+                and it has evolved into a career focused on building scalable, user-centric 
+                applications. I believe in writing clean, maintainable code and staying 
+                updated with the latest technologies.
+              </p>
+              <p>
+                When I'm not coding, you'll find me exploring new frameworks, contributing 
+                to open source projects, or mentoring aspiring developers in my community.
+              </p>
             </div>
-            <div className="experience-item">
-              <div className="experience-dot"></div>
-              <div className="experience-content">
-                <h4>Frontend Developer</h4>
-                <span>2021 - 2022</span>
-                <p>Specialized in React development and UI/UX implementation</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="about-sidebar">
-          <div className="about-image">
-            <div className="image-placeholder">
-              <div className="image-overlay">
-                <span>Tanuja's Photo</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="skills-section">
-            <h3>Technical Skills</h3>
-            <div className="skills">
-              {[
-                { name: "Frontend", skills: ["React", "JavaScript", "TypeScript", "Next.js", "CSS3", "HTML5"] },
-                { name: "Backend", skills: ["Node.js", "Express", "Python", "Django", "REST APIs", "GraphQL"] },
-                { name: "Database", skills: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"] },
-                { name: "Tools & Others", skills: ["Git", "Docker", "AWS", "Figma", "Postman"] }
-              ].map((category, index) => (
-                <div key={index} className="skill-category">
-                  <h4>{category.name}</h4>
-                  <div className="skill-tags">
-                    {category.skills.map((skill, skillIndex) => (
-                      <span key={skillIndex} className="skill-tag">{skill}</span>
-                    ))}
-                  </div>
+            
+            <div className="experience">
+              <h3>Experience</h3>
+              <div className="experience-item">
+                <div className="experience-dot"></div>
+                <div className="experience-content">
+                  <h4>Full Stack Developer</h4>
+                  <span>2022 - Present</span>
+                  <p>Building modern web applications and leading development teams</p>
                 </div>
-              ))}
+              </div>
+              <div className="experience-item">
+                <div className="experience-dot"></div>
+                <div className="experience-content">
+                  <h4>Frontend Developer</h4>
+                  <span>2021 - 2022</span>
+                  <p>Specialized in React development and UI/UX implementation</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="about-sidebar">
+            <div className="about-image">
+              <div className="image-placeholder">
+                <div className="image-overlay">
+                  <span>Tanuja's Photo</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="skills-section">
+              <h3>Technical Skills</h3>
+              <div className="skills">
+                {[
+                  { name: "Frontend", skills: ["React", "JavaScript", "TypeScript", "Next.js", "CSS3", "HTML5"] },
+                  { name: "Backend", skills: ["Node.js", "Express", "Python", "Django", "REST APIs", "GraphQL"] },
+                  { name: "Database", skills: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"] },
+                  { name: "Tools & Others", skills: ["Git", "Docker", "AWS", "Figma", "Postman"] }
+                ].map((category, index) => (
+                  <div key={index} className="skill-category">
+                    <h4>{category.name}</h4>
+                    <div className="skill-tags">
+                      {category.skills.map((skill, skillIndex) => {
+                        const SkillTag = () => {
+                          const skillRef = useMagnetic(0.15);
+                          return (
+                            <span ref={skillRef} key={skillIndex} className="skill-tag magnetic-element">{skill}</span>
+                          );
+                        };
+                        return <SkillTag key={skillIndex} />;
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const ContactSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState('Select project type');
+  const submitBtnRef = useMagnetic(0.3);
 
   const projectTypes = [
     'Full Stack Web Application',
@@ -429,7 +479,7 @@ const ContactSection = () => {
                   <label>Message</label>
                   <textarea placeholder="Tell me about your project..."></textarea>
                 </div>
-                <button type="submit" className="btn btn-primary">
+                <button ref={submitBtnRef} type="submit" className="btn btn-primary magnetic-element">
                   <span>Send Message</span>
                   <span className="btn-arrow">→</span>
                 </button>
@@ -443,28 +493,40 @@ const ContactSection = () => {
                   { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
                   { label: "Location", value: "Bangalore, India" },
                   { label: "Response Time", value: "Usually within 24 hours" }
-                ].map((item, index) => (
-                  <div key={index} className="contact-item">
-                    <h4>{item.label}</h4>
-                    {item.href ? (
-                      <a href={item.href}>{item.value}</a>
-                    ) : (
-                      <span>{item.value}</span>
-                    )}
-                  </div>
-                ))}
+                ].map((item, index) => {
+                  const ContactItem = () => {
+                    const contactRef = useMagnetic(0.15);
+                    return (
+                      <div ref={contactRef} className="contact-item magnetic-element">
+                        <h4>{item.label}</h4>
+                        {item.href ? (
+                          <a href={item.href}>{item.value}</a>
+                        ) : (
+                          <span>{item.value}</span>
+                        )}
+                      </div>
+                    );
+                  };
+                  return <ContactItem key={index} />;
+                })}
               </div>
               
               <div className="social-section">
                 <h4>Connect with me</h4>
                 <div className="social-links">
-                  {["LinkedIn", "GitHub", "Twitter", "Dev.to"].map((platform, index) => (
-                    <a key={index} href="#" className="social-link">
-                      <span className="social-number">0{index + 1}</span>
-                      <span className="social-text">{platform}</span>
-                      <span className="social-arrow">↗</span>
-                    </a>
-                  ))}
+                  {["LinkedIn", "GitHub", "Twitter", "Dev.to"].map((platform, index) => {
+                    const SocialLink = () => {
+                      const socialRef = useMagnetic(0.2);
+                      return (
+                        <a ref={socialRef} href="#" className="social-link magnetic-element">
+                          <span className="social-number">0{index + 1}</span>
+                          <span className="social-text">{platform}</span>
+                          <span className="social-arrow">↗</span>
+                        </a>
+                      );
+                    };
+                    return <SocialLink key={index} />;
+                  })}
                 </div>
               </div>
               
@@ -481,8 +543,6 @@ const ContactSection = () => {
     </section>
   );
 };
-
-
 
 const styles = `
   /* Reset and Base Styles */
@@ -512,6 +572,16 @@ const styles = `
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
+  }
+
+  /* Magnetic Element Base Styles */
+  .magnetic-element {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .magnetic-element:hover {
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Enhanced Navigation */
@@ -806,7 +876,7 @@ const styles = `
     font-family: inherit;
     opacity: 0;
     transform: translateY(50px);
-    animation: menuItemSlide 0.6s forwards;
+    animation: menuItemSlide0.6s forwards;
     position: relative;
     overflow: hidden;
   }
@@ -964,7 +1034,7 @@ const styles = `
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.7; transform: scale(1.2); }
-}
+  }
 
   .hero-title {
     font-size: clamp(3rem, 8vw, 7rem);
@@ -1627,18 +1697,17 @@ const styles = `
     box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
   }
 
-
   .image-placeholder::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
-  animation: rotateGlow 8s linear infinite;
-  opacity: 0;
-  transition: opacity 0.5s ease;
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
+    animation: rotateGlow 8s linear infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
   
   .image-placeholder:hover::before {
@@ -1654,9 +1723,6 @@ const styles = `
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-
-
-
 
   .image-overlay {
     position: absolute;
@@ -1846,7 +1912,9 @@ const styles = `
   }
 
   .social-link {
-    display: flex;
+
+
+  display: flex;
     align-items: center;
     gap: 1.5rem;
     color: white;
@@ -2025,6 +2093,77 @@ const styles = `
     width: 100%;
   }
 
+  .custom-dropdown {
+    position: relative;
+  }
+
+  .dropdown-trigger {
+    width: 100%;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  .dropdown-trigger:hover,
+  .dropdown-trigger.active {
+    border-color: #0066cc;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+  }
+
+  .dropdown-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .dropdown-trigger.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.95);
+    border: 2px solid rgba(0, 102, 204, 0.3);
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .dropdown-option {
+    padding: 1rem 1.2rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .dropdown-option:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-option:hover {
+    background: rgba(0, 102, 204, 0.2);
+    color: #66ccff;
+  }
+
+  .contact-form button.btn.btn-primary {
+    width: max-content;
+    justify-self: start;
+  }
+
   /* Responsive Design */
   @media (max-width: 1200px) {
     .container {
@@ -2049,7 +2188,7 @@ const styles = `
   }
 
   @media (max-width: 900px) {
-  .nav-menu {
+    .nav-menu {
       display: none;
     }
 
@@ -2228,7 +2367,8 @@ const styles = `
     }
 
     .image-placeholder {
-      height: 300px;
+      width: 250px;
+      height: 250px;
     }
 
     .about-text p {
@@ -2263,6 +2403,43 @@ const styles = `
     }
   }
 
+  /* Desktop floating menu behavior */
+  @media (min-width: 901px) {
+    .floating-menu {
+      display: none;
+    }
+    
+    .floating-menu.show-on-scroll {
+      display: block;
+    }
+  }
+
+  /* Show floating menu only on mobile (900px and below) */
+  @media (max-width: 900px) {
+    .floating-menu {
+      display: block;
+    }
+    
+    .nav-right-mobile {
+      display: none !important;
+    }
+    
+    .menu-toggle {
+      display: none !important;
+    }
+  }
+
+  .menu-item:focus {
+    outline: none;
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .menu-item:focus-visible {
+    outline: none;
+  }
+
   /* Accessibility and Performance */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -2272,10 +2449,10 @@ const styles = `
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-  }
-
-  @media (prefers-color-scheme: light) {
-    /* Keep dark theme regardless of system preference */
+    
+    .magnetic-element {
+      transition: none !important;
+    }
   }
 
   /* Focus states for accessibility */
@@ -2369,133 +2546,46 @@ const styles = `
     word-break: break-word;
     overflow-wrap: break-word;
   }
-
-/* Hide floating menu on desktop (above 900px) */
-// @media (min-width: 901px) {
-//   .floating-menu {
-//     display: none;
-//   }
-// }
-
-
-/* Desktop floating menu behavior */
-@media (min-width: 901px) {
-  .nav {
-    position: relative;
-  }
-  
-  .floating-menu {
-    display: none;
-  }
-  
-  .floating-menu.show-on-scroll {
-    display: block;
-  }
-}
-
-/* Show floating menu only on mobile (900px and below) */
-@media (max-width: 900px) {
-  .floating-menu {
-    display: block;
-  }
-}
-
-
-@media (max-width: 900px) {
-  .nav-right-mobile {
-    display: none !important;
-  }
-  
-  .menu-toggle {
-    display: none !important;
-  }
-}
-
-
-.menu-item:focus {
-  outline: none;
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-.menu-item:focus-visible {
-  outline: none;
-}
-
-.custom-dropdown {
-  position: relative;
-}
-
-.dropdown-trigger {
-  width: 100%;
-  padding: 1.2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-}
-
-.dropdown-trigger:hover,
-.dropdown-trigger.active {
-  border-color: #0066cc;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
-}
-
-.dropdown-arrow {
-  transition: transform 0.3s ease;
-}
-
-.dropdown-trigger.active .dropdown-arrow {
-  transform: rotate(180deg);
-}
-
-.dropdown-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(10, 10, 10, 0.95);
-  border: 2px solid rgba(0, 102, 204, 0.3);
-  border-radius: 12px;
-  margin-top: 0.5rem;
-  z-index: 1000;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.dropdown-option {
-  padding: 1rem 1.2rem;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.dropdown-option:last-child {
-  border-bottom: none;
-}
-
-.dropdown-option:hover {
-  background: rgba(0, 102, 204, 0.2);
-  color: #66ccff;
-}
-
-
-.contact-form button.btn.btn-primary {
-  width: max-content;
-  justify-self: start;
-}
-
-
 `;
 
 export default Portfolio;
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
