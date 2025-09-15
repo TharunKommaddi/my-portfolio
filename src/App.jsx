@@ -1802,11 +1802,13 @@ const styles = `
   height: 300px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center top; /* This shifts the crop position */
   transition: all 0.5s ease;
   animation: floatPhoto 6s ease-in-out infinite;
   margin: 0 auto;
   display: block;
 }
+
 
 .profile-image:hover {
   transform: scale(1.05) rotate(5deg);
