@@ -188,9 +188,9 @@ const HomeSection = ({ navigateTo }) => {
             Available for new projects
           </div>
           <h1 className="hero-title">
-            <span className="title-line">Full Stack</span>
-            <span className="title-line title-outline">Developer</span>
-            <span className="title-line">& Problem Solver</span>
+            <span className="title-line typing-effect" data-text="Full Stack">Full Stack</span>
+            <span className="title-line title-outline typing-effect" data-text="Developer" style={{"--delay": "1s"}}>Developer</span>
+            <span className="title-line typing-effect" data-text="& Problem Solver" style={{"--delay": "2s"}}>& Problem Solver</span>
           </h1>
           <div className="hero-subtitle">
             <span className="name">Tanuja</span>
@@ -1053,6 +1053,60 @@ const styles = `
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+
+  /* Add this after the existing .hero-title styles */
+
+  .typing-effect {
+    overflow: hidden;
+    border-right: 3px solid #0066cc;
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: 
+      typing 2s steps(var(--char-count, 20), end) var(--delay, 0s) forwards,
+      blink-caret 0.75s step-end infinite var(--delay, 0s);
+    width: 0;
+  }
+  
+  .typing-effect:nth-child(1) {
+    --char-count: 10; /* "Full Stack" character count */
+  }
+  
+  .typing-effect:nth-child(2) {
+    --char-count: 9; /* "Developer" character count */
+  }
+  
+  .typing-effect:nth-child(3) {
+    --char-count: 17; /* "& Problem Solver" character count */
+  }
+  
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+  
+  @keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #0066cc; }
+  }
+  
+  /* Remove cursor after typing is complete */
+  .typing-effect:nth-child(3) {
+    animation: 
+      typing 2s steps(17, end) 2s forwards,
+      blink-caret 0.75s step-end 5 2s,
+      remove-caret 0s 4.75s forwards;
+  }
+  
+  @keyframes remove-caret {
+    to { border-right: none; }
+  }
+  
+
+
+
+
+
+      
 
   .title-line {
     display: block;
