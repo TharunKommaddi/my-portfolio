@@ -2493,6 +2493,7 @@ const styles = `
 
     .contact-text {
       font-size: 1.1rem;
+      color: white;
     }
 
     .form-group input,
