@@ -1730,7 +1730,7 @@ const styles = `
     margin-bottom: 4rem;
     position: relative;
   }
-
+/*
   .image-placeholder {
     width: 300px;
     height: 300px;
@@ -1767,7 +1767,7 @@ const styles = `
   .image-placeholder:hover::before {
     opacity: 1;
   }
-  
+  */
   @keyframes floatPhoto {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -1777,7 +1777,7 @@ const styles = `
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-
+/*
   .image-overlay {
     position: absolute;
     top: 0;
@@ -1792,6 +1792,53 @@ const styles = `
     font-size: 1.1rem;
     opacity: 0.6;
   }
+*/
+
+
+
+
+.profile-image {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+  animation: floatPhoto 6s ease-in-out infinite;
+  margin: 0 auto;
+  display: block;
+}
+
+.profile-image:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
+}
+
+.about-image::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
+  animation: rotateGlow 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.about-image:hover::before {
+  opacity: 1;
+}
+
+
+
+
+
+
+
+
+
 
   .skills-section h3 {
     font-size: 1.5rem;
