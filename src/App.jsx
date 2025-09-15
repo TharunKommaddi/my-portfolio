@@ -378,12 +378,12 @@ const AboutSection = () => {
                     
           <div className="about-sidebar">
             <div className="about-image">
-              <div className="image-placeholder">
-                <div className="image-overlay">
-                  <span>Tanuja's Photo</span>
-                </div>
-              </div>
-            </div>
+  <img 
+    src="/images/Gemini_Generated_Image_8revb08revb08rev.png" 
+    alt="Tanuja's Photo"
+    className="profile-image"
+  />
+</div>
             
             <div className="skills-section">
               <h3>Technical Skills</h3>
