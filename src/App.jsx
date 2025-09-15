@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+
 // Custom hook for magnetic effects
 const useMagnetic = (strength = 0.3) => {
   const ref = useRef(null);
