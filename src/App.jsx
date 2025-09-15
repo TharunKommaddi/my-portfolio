@@ -586,7 +586,7 @@ const styles = `
 
   /* Enhanced Navigation */
   .nav {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     right: 0;
@@ -951,7 +951,7 @@ const styles = `
     display: flex;
     align-items: center;
     position: relative;
-    padding: 8rem 0 4rem;
+    padding: 4rem 0 4rem;
     overflow: hidden;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
   }
@@ -2403,31 +2403,31 @@ const styles = `
     }
   }
 
-  /* Desktop floating menu behavior */
-  @media (min-width: 901px) {
-    .floating-menu {
-      display: none;
-    }
-    
-    .floating-menu.show-on-scroll {
-      display: block;
-    }
+/* Desktop floating menu behavior - FIXED */
+@media (min-width: 901px) {
+  .floating-menu {
+    display: none; /* Hidden by default on desktop */
   }
+  
+  .floating-menu.show-on-scroll {
+    display: block; /* Only show when user scrolls */
+  }
+}
 
-  /* Show floating menu only on mobile (900px and below) */
-  @media (max-width: 900px) {
-    .floating-menu {
-      display: block;
-    }
-    
-    .nav-right-mobile {
-      display: none !important;
-    }
-    
-    .menu-toggle {
-      display: none !important;
-    }
+/* Show floating menu only on mobile (900px and below) */
+@media (max-width: 900px) {
+  .floating-menu {
+    display: block; /* Always visible on mobile */
   }
+  
+  .nav-right-mobile {
+    display: none !important;
+  }
+  
+  .menu-toggle {
+    display: none !important;
+  }
+}
 
   .menu-item:focus {
     outline: none;
