@@ -346,27 +346,34 @@ const AboutSection = () => {
               </p>
             </div>
             
-            <div className="experience">
-              <h3>Experience</h3>
-              <div className="experience-item">
-                <div className="experience-dot"></div>
-                <div className="experience-content">
-                  <h4>Full Stack Developer</h4>
-                  <span>2022 - Present</span>
-                  <p>Building modern web applications and leading development teams</p>
-                </div>
+          <div className="experience">
+            <h3>Experience</h3>
+            <div className="experience-item">
+              <div className="experience-dot"></div>
+              <div className="experience-content">
+                <h4>Software Engineer</h4>
+                <span>May 2024 - Present</span>
+                <p>Full-time role at Kaplan, developing software solutions in a hybrid work environment</p>
               </div>
-              <div className="experience-item">
-                <div className="experience-dot"></div>
-                <div className="experience-content">
-                  <h4>Frontend Developer</h4>
-                  <span>2021 - 2022</span>
-                  <p>Specialized in React development and UI/UX implementation</p>
-                </div>
+            </div>
+            <div className="experience-item">
+              <div className="experience-dot"></div>
+              <div className="experience-content">
+                <h4>Associate Software Engineering</h4>
+                <span>Sep 2023 - May 2024</span>
+                <p>Worked at Robosoft Technologies focusing on web application development and GitHub collaboration</p>
+              </div>
+            </div>
+            <div className="experience-item">
+              <div className="experience-dot"></div>
+              <div className="experience-content">
+                <h4>Trainee Software Engineer</h4>
+                <span>2023</span>
+                <p>Started career in software development, building foundational skills in programming and development practices</p>
               </div>
             </div>
           </div>
-          
+                    
           <div className="about-sidebar">
             <div className="about-image">
               <div className="image-placeholder">
