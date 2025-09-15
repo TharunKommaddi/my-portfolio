@@ -876,7 +876,7 @@ const styles = `
     font-family: inherit;
     opacity: 0;
     transform: translateY(50px);
-    animation: menuItemSlide0.6s forwards;
+    animation: menuItemSlide 0.6s forwards;
     position: relative;
     overflow: hidden;
   }
