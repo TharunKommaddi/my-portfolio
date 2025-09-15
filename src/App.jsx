@@ -45,7 +45,7 @@ const Portfolio = () => {
 
   // Magnetic refs
   const logoRef = useMagnetic(0.2);
-  const floatingMenuRef = useMagnetic(0.4);
+  const floatingMenuRef = useMagnetic(0.5);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -747,8 +747,8 @@ const styles = `
   }
 
   .floating-menu-button {
-    width: 64px;
-    height: 64px;
+    width: 80px; /* Made bigger */
+    height: 80px; /* Made bigger */
     border-radius: 50%;
     background: linear-gradient(135deg, #0066cc, #0052a3);
     border: none;
@@ -795,8 +795,8 @@ const styles = `
     transition: all 0.3s ease;
   }
 
-  .floating-line {
-    width: 20px;
+ .floating-line {
+    width: 24px; /* Made bigger to match larger button */
     height: 2px;
     background: white;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
