@@ -1058,6 +1058,7 @@ const styles = `
 
   /* Add this after the existing .hero-title styles */
 
+/* Typewriter Effect - Complete CSS */
 .typing-effect {
   overflow: hidden;
   border-right: 3px solid #0066cc;
@@ -1071,14 +1072,24 @@ const styles = `
 
 .typing-effect:nth-child(1) {
   --char-count: 10; /* "Full Stack" character count */
+  animation: 
+    typing 2s steps(10, end) 0s forwards,
+    blink-caret 0.75s step-end infinite 0s;
 }
 
 .typing-effect:nth-child(2) {
   --char-count: 9; /* "Developer" character count */
+  animation: 
+    typing 2s steps(9, end) 1s forwards,
+    blink-caret 0.75s step-end infinite 1s;
 }
 
 .typing-effect:nth-child(3) {
   --char-count: 17; /* "& Problem Solver" character count */
+  animation: 
+    typing 2s steps(17, end) 2s forwards,
+    blink-caret 0.75s step-end 3 2s,
+    hide-cursor 0s 4.25s forwards;
 }
 
 @keyframes typing {
@@ -1099,20 +1110,11 @@ const styles = `
   }
 }
 
-/* Remove cursor after typing is complete */
-.typing-effect:nth-child(3) {
-  animation: 
-    typing 2s steps(17, end) 2s forwards,
-    blink-caret 0.75s step-end 5 2s,
-    remove-caret 0s 4.75s forwards;
-}
-
-@keyframes remove-caret {
+@keyframes hide-cursor {
   to { 
-    border-right: none; 
+    border-right: none;
   }
 }
-
 
 
 
