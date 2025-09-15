@@ -1058,63 +1058,44 @@ const styles = `
 
   /* Add this after the existing .hero-title styles */
 
-/* Typewriter Effect - Complete CSS */
-.typing-effect {
-  overflow: hidden;
-  border-right: 3px solid #0066cc;
-  white-space: nowrap;
-  margin: 0;
-  width: 0;
-  animation: 
-    typing 2s steps(var(--char-count, 20), end) var(--delay, 0s) forwards,
-    blink-caret 0.75s step-end infinite var(--delay, 0s);
-}
-
-.typing-effect:nth-child(1) {
-  --char-count: 10; /* "Full Stack" character count */
-  animation: 
-    typing 2s steps(10, end) 0s forwards,
-    blink-caret 0.75s step-end infinite 0s;
-}
-
-.typing-effect:nth-child(2) {
-  --char-count: 9; /* "Developer" character count */
-  animation: 
-    typing 2s steps(9, end) 1s forwards,
-    blink-caret 0.75s step-end infinite 1s;
-}
-
-.typing-effect:nth-child(3) {
-  --char-count: 17; /* "& Problem Solver" character count */
-  animation: 
-    typing 2s steps(17, end) 2s forwards,
-    blink-caret 0.75s step-end 3 2s,
-    hide-cursor 0s 4.25s forwards;
-}
-
-@keyframes typing {
-  from { 
-    width: 0; 
+  /* Typewriter Effect - Complete CSS */
+  .typing-effect {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    width: 0;
+    animation: typing 2s steps(var(--char-count, 20), end) var(--delay, 0s) forwards;
   }
-  to { 
-    width: 100%; 
+  
+  .typing-effect:nth-child(1) {
+    --char-count: 10; /* "Full Stack" character count */
+    --delay: 0s;
   }
-}
+  
+  .typing-effect:nth-child(2) {
+    --char-count: 9; /* "Developer" character count */
+    --delay: 1s;
+  }
+  
+  .typing-effect:nth-child(3) {
+    --char-count: 17; /* "& Problem Solver" character count */
+    --delay: 2s;
+  }
+  
+  @keyframes typing {
+    from { 
+      width: 0; 
+    }
+    to { 
+      width: 100%; 
+    }
+  }
 
-@keyframes blink-caret {
-  from, to { 
-    border-right-color: transparent; 
-  }
-  50% { 
-    border-right-color: #0066cc; 
-  }
-}
 
-@keyframes hide-cursor {
-  to { 
-    border-right: none;
-  }
-}
+
+
+  
+
 
 
 
