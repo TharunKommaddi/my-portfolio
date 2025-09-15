@@ -374,6 +374,7 @@ const AboutSection = () => {
               </div>
             </div>
           </div>
+        </div>
                     
           <div className="about-sidebar">
             <div className="about-image">
