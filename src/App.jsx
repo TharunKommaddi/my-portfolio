@@ -438,10 +438,17 @@ const ContactSection = () => {
         <div className="contact-content">
           <span className="section-number">04</span>
           <h2 className="section-title">Let's Build Something Amazing</h2>
-          <p className="contact-text">
+{/*           <p className="contact-text">
             Ready to turn your ideas into reality? I'm always excited to work on 
             challenging projects and collaborate with innovative teams.
-          </p>
+          </p> */}
+
+          
+          <p className="contact-intro-text">
+  Ready to turn your ideas into reality? I'm always excited to work on 
+  challenging projects and collaborate with innovative teams.
+</p>
+
           
           <div className="contact-grid">
             <div className="contact-form-section">
@@ -2500,6 +2507,19 @@ const styles = `
      
       
     }
+
+
+/* New class specifically for the contact intro text */
+.contact-intro-text {
+  font-size: 1.2rem !important;
+  color: #ffffff !important;
+  opacity: 0.9 !important;
+  
+  display: block !important;
+  visibility: visible !important;
+ 
+}
+
 
     .form-group input,
     .form-group select,
