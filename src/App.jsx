@@ -2496,7 +2496,7 @@ const styles = `
       opacity: 0.9;
       
       
-      color: white;
+      color: white !important;
      
       
     }
