@@ -2495,7 +2495,7 @@ const styles = `
       font-size: 0.85rem;
     }
 
-    .contact-text {
+    p.contact-text {
       font-size: 1.1rem;
       opacity: 0.9;
 
