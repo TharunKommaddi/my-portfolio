@@ -2493,7 +2493,12 @@ const styles = `
 
     .contact-text {
       font-size: 1.1rem;
+      opacity: 0.9;
+      
+      
       color: white;
+     
+      
     }
 
     .form-group input,
