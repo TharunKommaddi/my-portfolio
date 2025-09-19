@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-
 // Custom hook for magnetic effects
 const useMagnetic = (strength = 0.3) => {
   const ref = useRef(null);
@@ -47,6 +46,50 @@ const Portfolio = () => {
   // Magnetic refs
   const logoRef = useMagnetic(0.2);
   const floatingMenuRef = useMagnetic(0.5);
+
+  // Initialize EmailJS and Smartsupp
+  useEffect(() => {
+    // EmailJS Initialization
+    if (window.emailjs) {
+      window.emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS public key
+    }
+
+    // Smartsupp Chat Integration
+    const smartsuppScript = document.createElement('script');
+    smartsuppScript.type = 'text/javascript';
+    smartsuppScript.innerHTML = `
+      var _smartsupp = _smartsupp || {};
+      _smartsupp.key = 'YOUR_SMARTSUPP_KEY'; // Replace with your Smartsupp key
+      window.smartsupp || (function (d) {
+        var s, c, o = smartsupp = function () {
+          o._.push(arguments)
+        };
+        o._ = [];
+        s = d.getElementsByTagName('script')[0];
+        c = d.createElement('script');
+        c.type = 'text/javascript';
+        c.charset = 'utf-8';
+        c.async = true;
+        c.src = 'https://www.smartsuppchat.com/loader.js?';
+        s.parentNode.insertBefore(c, s);
+      })(document);
+      _smartsupp.offsetX = 10;
+      _smartsupp.offsetY = 40;
+    `;
+    document.head.appendChild(smartsuppScript);
+
+    // Load EmailJS script
+    const emailjsScript = document.createElement('script');
+    emailjsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    emailjsScript.async = true;
+    document.head.appendChild(emailjsScript);
+
+    return () => {
+      // Cleanup scripts if needed
+      document.head.removeChild(smartsuppScript);
+      document.head.removeChild(emailjsScript);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -421,6 +464,14 @@ const AboutSection = () => {
 const ContactSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState('Select project type');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [validationErrors, setValidationErrors] = useState({});
+  
   const submitBtnRef = useMagnetic(0.3);
 
   const projectTypes = [
@@ -432,6 +483,90 @@ const ContactSection = () => {
     'Other'
   ];
 
+  // Email validation function
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
+
+  // Clear validation messages
+  const clearValidationMessages = () => {
+    setValidationErrors({});
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // Send email function using EmailJS
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    clearValidationMessages();
+
+    // Validation
+    const errors = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = 'Please enter your name.';
+    }
+    
+    if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = 'Please enter a message.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // EmailJS send function
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        project_type: selectedProject,
+        message: formData.message,
+        to_email: 'your-email@gmail.com' // Replace with your email
+      };
+
+      await window.emailjs.send(
+        'YOUR_SERVICE_ID',        // Replace with your EmailJS service ID
+        'YOUR_TEMPLATE_ID',       // Replace with your EmailJS template ID
+        templateParams
+      );
+
+      // Success - clear form
+      setFormData({ name: '', email: '', message: '' });
+      setSelectedProject('Select project type');
+      alert('Your message has been sent successfully!');
+      
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      alert('Failed to send the message. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section className="contact-section">
       <div className="container">
@@ -442,24 +577,39 @@ const ContactSection = () => {
             Ready to turn your ideas into reality? I'm always excited to work on 
             challenging projects and collaborate with innovative teams.
           </p>
-
-          
-
-
           
           <div className="contact-grid">
             <div className="contact-form-section">
               <h3>Send me a message</h3>
-              <div className="contact-form">
-                {[
-                  { label: "Name", type: "text", placeholder: "Your name" },
-                  { label: "Email", type: "email", placeholder: "your.email@example.com" },
-                ].map((field, index) => (
-                  <div key={index} className="form-group">
-                    <label>{field.label}</label>
-                    <input type={field.type} placeholder={field.placeholder} />
-                  </div>
-                ))}
+              <form className="contact-form" onSubmit={sendEmail}>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input 
+                    type="text" 
+                    name="name"
+                    placeholder="Your name" 
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                  {validationErrors.name && (
+                    <div className="validation-error">{validationErrors.name}</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Email</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    placeholder="your.email@example.com" 
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                  {validationErrors.email && (
+                    <div className="validation-error">{validationErrors.email}</div>
+                  )}
+                </div>
+
                 <div className="form-group">
                   <label>Project Type</label>
                   <div className="custom-dropdown">
@@ -488,15 +638,31 @@ const ContactSection = () => {
                     )}
                   </div>
                 </div>
+
                 <div className="form-group">
                   <label>Message</label>
-                  <textarea placeholder="Tell me about your project..."></textarea>
+                  <textarea 
+                    name="message"
+                    placeholder="Tell me about your project..."
+                    value={formData.message}
+                    onChange={handleInputChange}
+                  ></textarea>
+                  {validationErrors.message && (
+                    <div className="validation-error">{validationErrors.message}</div>
+                  )}
                 </div>
-                <button ref={submitBtnRef} type="submit" className="btn btn-primary magnetic-element">
-                  <span>Send Message</span>
-                  <span className="btn-arrow">→</span>
+
+                <button 
+                  ref={submitBtnRef} 
+                  type="submit" 
+                  className="btn btn-primary magnetic-element"
+                  disabled={isLoading}
+                >
+                  <span>{isLoading ? 'Sending...' : 'Send Message'}</span>
+                  {!isLoading && <span className="btn-arrow">→</span>}
+                  {isLoading && <span className="loading-spinner">⟳</span>}
                 </button>
-              </div>
+              </form>
             </div>
             
             <div className="contact-info-section">
@@ -585,6 +751,25 @@ const styles = `
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
+  }
+
+  /* Validation Error Styles */
+  .validation-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   /* Magnetic Element Base Styles */
@@ -760,8 +945,8 @@ const styles = `
   }
 
   .floating-menu-button {
-    width: 80px; /* Made bigger */
-    height: 80px; /* Made bigger */
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0066cc, #0052a3);
     border: none;
@@ -809,7 +994,7 @@ const styles = `
   }
 
  .floating-line {
-    width: 24px; /* Made bigger to match larger button */
+    width: 24px;
     height: 2px;
     background: white;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1060,9 +1245,7 @@ const styles = `
     overflow-wrap: break-word;
   }
 
-  /* Add this after the existing .hero-title styles */
-
-  /* Typewriter Effect - Complete CSS */
+  /* Typewriter Effect */
   .typing-effect {
     overflow: hidden;
     white-space: nowrap;
@@ -1072,38 +1255,24 @@ const styles = `
   }
   
   .typing-effect:nth-child(1) {
-    --char-count: 10; /* "Full Stack" character count */
+    --char-count: 10;
     --delay: 0s;
   }
   
   .typing-effect:nth-child(2) {
-    --char-count: 9; /* "Developer" character count */
+    --char-count: 9;
     --delay: 1s;
   }
   
   .typing-effect:nth-child(3) {
-    --char-count: 17; /* "& Problem Solver" character count */
+    --char-count: 17;
     --delay: 2s;
   }
   
   @keyframes typing {
-    from { 
-      width: 0; 
-    }
-    to { 
-      width: 100%; 
-    }
+    from { width: 0; }
+    to { width: 100%; }
   }
-
-
-
-
-  
-
-
-
-
-      
 
   .title-line {
     display: block;
@@ -1223,6 +1392,11 @@ const styles = `
     text-decoration: none;
   }
 
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .btn::before {
     content: '';
     position: absolute;
@@ -1247,7 +1421,7 @@ const styles = `
     border-color: #0066cc;
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover:not(:disabled) {
     background: linear-gradient(135deg, #0052a3, #003d7a);
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
@@ -1734,28 +1908,35 @@ const styles = `
     margin-bottom: 4rem;
     position: relative;
   }
-/*
-  .image-placeholder {
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.5s ease;
-    margin: 0 auto;
-    animation: floatPhoto 6s ease-in-out infinite;
+
+  @keyframes floatPhoto {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
-  .image-placeholder:hover {
+  .profile-image {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 15%;
+    transition: all 0.5s ease;
+    animation: floatPhoto 6s ease-in-out infinite;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .profile-image:hover {
     transform: scale(1.05) rotate(5deg);
     box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
   }
 
-  .image-placeholder::before {
+  .about-image::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -1766,85 +1947,12 @@ const styles = `
     animation: rotateGlow 8s linear infinite;
     opacity: 0;
     transition: opacity 0.5s ease;
+    pointer-events: none;
   }
-  
-  .image-placeholder:hover::before {
+
+  .about-image:hover::before {
     opacity: 1;
   }
-  */
-  @keyframes floatPhoto {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  @keyframes rotateGlow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-/*
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), transparent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.1rem;
-    opacity: 0.6;
-  }
-*/
-
-
-
-
-.profile-image {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 15%;
-  transition: all 0.5s ease;
-  animation: floatPhoto 6s ease-in-out infinite;
-  margin: 0 auto;
-  display: block;
-}
-
-
-.profile-image:hover {
-  transform: scale(1.05) rotate(5deg);
-  box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
-}
-
-.about-image::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
-  animation: rotateGlow 8s linear infinite;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-}
-
-.about-image:hover::before {
-  opacity: 1;
-}
-
-
-
-
-
-
-
-
-
 
   .skills-section h3 {
     font-size: 1.5rem;
@@ -1894,6 +2002,15 @@ const styles = `
     padding: 8rem 0;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     position: relative;
+  }
+
+  .contact-text {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 700px;
+    margin: 2rem auto 0;
+    color: white;
+    text-align: center;
   }
 
   .contact-grid {
@@ -2019,9 +2136,7 @@ const styles = `
   }
 
   .social-link {
-
-
-  display: flex;
+    display: flex;
     align-items: center;
     gap: 1.5rem;
     color: white;
@@ -2473,7 +2588,7 @@ const styles = `
       margin-top: 4rem;
     }
 
-    .image-placeholder {
+    .profile-image {
       width: 250px;
       height: 250px;
     }
@@ -2495,27 +2610,10 @@ const styles = `
       font-size: 0.85rem;
     }
 
-    p.contact-text {
+    .contact-text {
       font-size: 1.1rem;
-      opacity: 0.9;
-
-          word-break: break-word;
-    overflow-wrap: break-word;
-
-
-    
-      
-      
-      color: white !important;
-
-      display: block !important;
-      
-     
-      
+      color: white;
     }
-
-
-
 
     .form-group input,
     .form-group select,
@@ -2528,21 +2626,21 @@ const styles = `
     }
   }
 
-/* Desktop floating menu behavior - FIXED */
+/* Desktop floating menu behavior */
 @media (min-width: 901px) {
   .floating-menu {
-    display: none; /* Hidden by default on desktop */
+    display: none;
   }
   
   .floating-menu.show-on-scroll {
-    display: block; /* Only show when user scrolls */
+    display: block;
   }
 }
 
-/* Show floating menu only on mobile (900px and below) */
+/* Show floating menu only on mobile */
 @media (max-width: 900px) {
   .floating-menu {
-    display: block; /* Always visible on mobile */
+    display: block;
   }
   
   .nav-right-mobile {
@@ -2666,45 +2764,14 @@ const styles = `
   .social-link,
   .hero-description,
   .work-description,
-  .about-text p
-   {
+  .about-text p,
+  .contact-text {
     word-break: break-word;
     overflow-wrap: break-word;
-    
   }
 `;
 
 export default Portfolio;
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
