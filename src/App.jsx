@@ -2761,6 +2761,39 @@ const styles = `
     word-break: break-word;
     overflow-wrap: break-word;
   }
+
+
+
+
+.contact-text {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  margin-bottom: 4rem;
+  max-width: 700px;
+  opacity: 0.9;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #0066cc;
+  backdrop-filter: blur(10px);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+  .contact-text {
+    background: transparent;
+    padding: 0;
+    border-left: none;
+    text-shadow: none;
+  }
+}
+
+
+
+
 `;
 
 export default Portfolio;
