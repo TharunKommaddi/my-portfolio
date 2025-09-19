@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-
 // Custom hook for magnetic effects
 const useMagnetic = (strength = 0.3) => {
   const ref = useRef(null);
@@ -47,6 +46,44 @@ const Portfolio = () => {
   // Magnetic refs
   const logoRef = useMagnetic(0.2);
   const floatingMenuRef = useMagnetic(0.5);
+
+  // Initialize EmailJS and Smartsupp on component mount
+  useEffect(() => {
+    // Initialize EmailJS
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    script.onload = () => {
+      window.emailjs.init("rf51uN24B1GLWbdPr"); // Replace with your EmailJS public key
+    };
+    document.head.appendChild(script);
+
+    // Initialize Smartsupp Chat
+    window._smartsupp = window._smartsupp || {};
+    window._smartsupp.key = 'YOUR_SMARTSUPP_KEY'; // Replace with your Smartsupp key
+    window._smartsupp.offsetX = 10;
+    window._smartsupp.offsetY = 40;
+    
+    if (!window.smartsupp) {
+      const smartsuppScript = document.createElement('script');
+      smartsuppScript.type = 'text/javascript';
+      smartsuppScript.charset = 'utf-8';
+      smartsuppScript.async = true;
+      smartsuppScript.src = 'https://www.smartsuppchat.com/loader.js?';
+      
+      const firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode.insertBefore(smartsuppScript, firstScript);
+      
+      window.smartsupp = function() {
+        window.smartsupp._.push(arguments);
+      };
+      window.smartsupp._ = [];
+    }
+
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -421,6 +458,14 @@ const AboutSection = () => {
 const ContactSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState('Select project type');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+    projectType: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const submitBtnRef = useMagnetic(0.3);
 
   const projectTypes = [
@@ -431,6 +476,101 @@ const ContactSection = () => {
     'E-commerce Solution',
     'Other'
   ];
+
+  // Email validation function
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
+
+  // Clear validation messages
+  const clearValidationMessages = () => {
+    setErrors({});
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear specific error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // Send email function
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    clearValidationMessages();
+
+    // Validation
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Please enter your name.";
+    }
+
+    if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Please enter a message.";
+    }
+
+    if (selectedProject === 'Select project type') {
+      newErrors.projectType = "Please select a project type.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        project_type: selectedProject,
+        to_name: "Tanuja" // Your name
+      };
+
+      const result = await window.emailjs.send(
+        'service_06xd8fc', // Replace with your EmailJS service ID
+        'template_xu1m488', // Replace with your EmailJS template ID
+        templateParams
+      );
+
+      console.log('Email sent successfully:', result);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+        projectType: ''
+      });
+      setSelectedProject('Select project type');
+      
+      alert("Your message sent successfully!");
+      
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      alert("Failed to send the message. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section className="contact-section">
@@ -443,23 +583,34 @@ const ContactSection = () => {
             challenging projects and collaborate with innovative teams.
           </p>
 
-          
-
-
-          
           <div className="contact-grid">
             <div className="contact-form-section">
               <h3>Send me a message</h3>
-              <div className="contact-form">
-                {[
-                  { label: "Name", type: "text", placeholder: "Your name" },
-                  { label: "Email", type: "email", placeholder: "your.email@example.com" },
-                ].map((field, index) => (
-                  <div key={index} className="form-group">
-                    <label>{field.label}</label>
-                    <input type={field.type} placeholder={field.placeholder} />
-                  </div>
-                ))}
+              <form className="contact-form" onSubmit={sendEmail}>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input 
+                    type="text" 
+                    name="name"
+                    placeholder="Your name" 
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                  {errors.name && <div className="error-message">{errors.name}</div>}
+                </div>
+
+                <div className="form-group">
+                  <label>Email</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    placeholder="your.email@example.com" 
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                  {errors.email && <div className="error-message">{errors.email}</div>}
+                </div>
+
                 <div className="form-group">
                   <label>Project Type</label>
                   <div className="custom-dropdown">
@@ -478,7 +629,11 @@ const ContactSection = () => {
                             className="dropdown-option"
                             onClick={() => {
                               setSelectedProject(type);
+                              setFormData(prev => ({ ...prev, projectType: type }));
                               setIsDropdownOpen(false);
+                              if (errors.projectType) {
+                                setErrors(prev => ({ ...prev, projectType: '' }));
+                              }
                             }}
                           >
                             {type}
@@ -487,24 +642,38 @@ const ContactSection = () => {
                       </div>
                     )}
                   </div>
+                  {errors.projectType && <div className="error-message">{errors.projectType}</div>}
                 </div>
+
                 <div className="form-group">
                   <label>Message</label>
-                  <textarea placeholder="Tell me about your project..."></textarea>
+                  <textarea 
+                    name="message"
+                    placeholder="Tell me about your project..."
+                    value={formData.message}
+                    onChange={handleInputChange}
+                  ></textarea>
+                  {errors.message && <div className="error-message">{errors.message}</div>}
                 </div>
-                <button ref={submitBtnRef} type="submit" className="btn btn-primary magnetic-element">
-                  <span>Send Message</span>
+
+                <button 
+                  ref={submitBtnRef} 
+                  type="submit" 
+                  className="btn btn-primary magnetic-element"
+                  disabled={isLoading}
+                >
+                  <span>{isLoading ? 'Sending...' : 'Send Message'}</span>
                   <span className="btn-arrow">→</span>
                 </button>
-              </div>
+              </form>
             </div>
             
             <div className="contact-info-section">
               <div className="contact-info">
                 {[
-                  { label: "Email", value: "tanuja.dev@example.com", href: "mailto:tanuja.dev@example.com" },
-                  { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
-                  { label: "Location", value: "Bangalore, India" },
+                  { label: "Email", value: "tanuja.dev@example.com", href: "mailto:tanuja.dev@example.com" }, // Update with your email
+                  { label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" }, // Update with your phone
+                  { label: "Location", value: "Bangalore, India" }, // Update with your location
                   { label: "Response Time", value: "Usually within 24 hours" }
                 ].map((item, index) => {
                   const ContactItem = () => {
@@ -585,6 +754,14 @@ const styles = `
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
+  }
+
+  /* Error message styles */
+  .error-message {
+    color: #CE2029;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
   }
 
   /* Magnetic Element Base Styles */
@@ -687,6 +864,10 @@ const styles = `
     font-weight: 500;
   }
 
+
+
+
+
   .nav-link::before {
     content: '';
     position: absolute;
@@ -760,8 +941,8 @@ const styles = `
   }
 
   .floating-menu-button {
-    width: 80px; /* Made bigger */
-    height: 80px; /* Made bigger */
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0066cc, #0052a3);
     border: none;
@@ -808,8 +989,8 @@ const styles = `
     transition: all 0.3s ease;
   }
 
- .floating-line {
-    width: 24px; /* Made bigger to match larger button */
+  .floating-line {
+    width: 24px;
     height: 2px;
     background: white;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1060,9 +1241,7 @@ const styles = `
     overflow-wrap: break-word;
   }
 
-  /* Add this after the existing .hero-title styles */
-
-  /* Typewriter Effect - Complete CSS */
+  /* Typewriter Effect */
   .typing-effect {
     overflow: hidden;
     white-space: nowrap;
@@ -1072,38 +1251,24 @@ const styles = `
   }
   
   .typing-effect:nth-child(1) {
-    --char-count: 10; /* "Full Stack" character count */
+    --char-count: 10;
     --delay: 0s;
   }
   
   .typing-effect:nth-child(2) {
-    --char-count: 9; /* "Developer" character count */
+    --char-count: 9;
     --delay: 1s;
   }
   
   .typing-effect:nth-child(3) {
-    --char-count: 17; /* "& Problem Solver" character count */
+    --char-count: 17;
     --delay: 2s;
   }
   
   @keyframes typing {
-    from { 
-      width: 0; 
-    }
-    to { 
-      width: 100%; 
-    }
+    from { width: 0; }
+    to { width: 100%; }
   }
-
-
-
-
-  
-
-
-
-
-      
 
   .title-line {
     display: block;
@@ -1251,6 +1416,13 @@ const styles = `
     background: linear-gradient(135deg, #0052a3, #003d7a);
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   .btn-secondary {
@@ -1728,34 +1900,31 @@ const styles = `
   .about-sidebar {
     position: sticky;
     top: 2rem;
-  }
+    }
 
   .about-image {
     margin-bottom: 4rem;
     position: relative;
   }
-/*
-  .image-placeholder {
+
+  .profile-image {
     width: 300px;
     height: 300px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
+    object-fit: cover;
+    object-position: center 15%;
     transition: all 0.5s ease;
-    margin: 0 auto;
     animation: floatPhoto 6s ease-in-out infinite;
+    margin: 0 auto;
+    display: block;
   }
 
-  .image-placeholder:hover {
+  .profile-image:hover {
     transform: scale(1.05) rotate(5deg);
     box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
   }
 
-  .image-placeholder::before {
+  .about-image::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -1766,12 +1935,13 @@ const styles = `
     animation: rotateGlow 8s linear infinite;
     opacity: 0;
     transition: opacity 0.5s ease;
+    pointer-events: none;
   }
-  
-  .image-placeholder:hover::before {
+
+  .about-image:hover::before {
     opacity: 1;
   }
-  */
+
   @keyframes floatPhoto {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -1781,70 +1951,6 @@ const styles = `
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-/*
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), transparent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.1rem;
-    opacity: 0.6;
-  }
-*/
-
-
-
-
-.profile-image {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 15%;
-  transition: all 0.5s ease;
-  animation: floatPhoto 6s ease-in-out infinite;
-  margin: 0 auto;
-  display: block;
-}
-
-
-.profile-image:hover {
-  transform: scale(1.05) rotate(5deg);
-  box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
-}
-
-.about-image::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(0, 102, 204, 0.1), transparent);
-  animation: rotateGlow 8s linear infinite;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-}
-
-.about-image:hover::before {
-  opacity: 1;
-}
-
-
-
-
-
-
-
-
-
 
   .skills-section h3 {
     font-size: 1.5rem;
@@ -2019,9 +2125,7 @@ const styles = `
   }
 
   .social-link {
-
-
-  display: flex;
+    display: flex;
     align-items: center;
     gap: 1.5rem;
     color: white;
@@ -2271,6 +2375,32 @@ const styles = `
     justify-self: start;
   }
 
+  /* Desktop floating menu behavior - FIXED */
+  @media (min-width: 901px) {
+    .floating-menu {
+      display: none;
+    }
+    
+    .floating-menu.show-on-scroll {
+      display: block;
+    }
+  }
+
+  /* Show floating menu only on mobile (900px and below) */
+  @media (max-width: 900px) {
+    .floating-menu {
+      display: block;
+    }
+    
+    .nav-right-mobile {
+      display: none !important;
+    }
+    
+    .menu-toggle {
+      display: none !important;
+    }
+  }
+
   /* Responsive Design */
   @media (max-width: 1200px) {
     .container {
@@ -2473,7 +2603,7 @@ const styles = `
       margin-top: 4rem;
     }
 
-    .image-placeholder {
+    .profile-image {
       width: 250px;
       height: 250px;
     }
@@ -2498,24 +2628,11 @@ const styles = `
     p.contact-text {
       font-size: 1.1rem;
       opacity: 0.9;
-
-          word-break: break-word;
-    overflow-wrap: break-word;
-
-
-    
-      
-      
+      word-break: break-word;
+      overflow-wrap: break-word;
       color: white !important;
-
       display: block !important;
-      
-     
-      
     }
-
-
-
 
     .form-group input,
     .form-group select,
@@ -2527,32 +2644,6 @@ const styles = `
       padding: 1.5rem;
     }
   }
-
-/* Desktop floating menu behavior - FIXED */
-@media (min-width: 901px) {
-  .floating-menu {
-    display: none; /* Hidden by default on desktop */
-  }
-  
-  .floating-menu.show-on-scroll {
-    display: block; /* Only show when user scrolls */
-  }
-}
-
-/* Show floating menu only on mobile (900px and below) */
-@media (max-width: 900px) {
-  .floating-menu {
-    display: block; /* Always visible on mobile */
-  }
-  
-  .nav-right-mobile {
-    display: none !important;
-  }
-  
-  .menu-toggle {
-    display: none !important;
-  }
-}
 
   .menu-item:focus {
     outline: none;
@@ -2666,50 +2757,13 @@ const styles = `
   .social-link,
   .hero-description,
   .work-description,
-  .about-text p
-   {
+  .about-text p {
     word-break: break-word;
     overflow-wrap: break-word;
-    
   }
 `;
 
 export default Portfolio;
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
