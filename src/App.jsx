@@ -60,7 +60,7 @@ const Portfolio = () => {
 
     // Initialize Smartsupp Chat
     window._smartsupp = window._smartsupp || {};
-    window._smartsupp.key = 'YOUR_SMARTSUPP_KEY'; // Replace with your Smartsupp key
+    window._smartsupp.key = 'f7dcc0464423df1464a18c6cd4d0a623d1dda846'; // Replace with your Smartsupp key
     window._smartsupp.offsetX = 10;
     window._smartsupp.offsetY = 40;
     
