@@ -880,6 +880,20 @@ input:focus, textarea:focus {
 
 
 
+/* Make cursor appear ABOVE menu overlay */
+.cursor {
+  z-index: 10001 !important;
+}
+
+.cursor-follower {
+  z-index: 10000 !important;
+}
+
+
+
+
+
+
 
 
 
