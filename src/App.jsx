@@ -867,7 +867,16 @@ input:focus, textarea:focus {
 }
 
 
+/* Make cursor visible on dark menu overlay */
+.menu-overlay.active .cursor {
+  background: #ffffff !important;
+  mix-blend-mode: normal !important;
+}
 
+.menu-overlay.active .cursor-follower {
+  border-color: #ffffff !important;
+  mix-blend-mode: normal !important;
+}
 
 
 
