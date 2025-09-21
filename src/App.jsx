@@ -878,6 +878,10 @@ input:focus, textarea:focus {
   mix-blend-mode: normal !important;
 }
 
+/* Make BOTH cursor elements invert on blue backgrounds */
+.cursor-follower {
+  mix-blend-mode: difference !important;
+}
 
 
 /* Make cursor appear ABOVE menu overlay */
