@@ -812,7 +812,10 @@ const styles = `
   }
 
 
-  /* Custom Cursor */
+
+
+
+/* Custom Cursor */
 .cursor {
   position: fixed;
   width: 20px;
@@ -849,15 +852,28 @@ const styles = `
   opacity: 0.8;
 }
 
-/* Hide default cursor */
-* {
+/* Hide default cursor EVERYWHERE */
+*, *::before, *::after {
   cursor: none !important;
 }
 
-/* Show default cursor on form elements */
-input, textarea, select, button {
-  cursor: pointer !important;
+html, body, div, span, button, a, input, textarea, select, h1, h2, h3, h4, h5, h6, p, ul, li, nav, section, footer {
+  cursor: none !important;
 }
+
+/* Only show text cursor when actively typing in form fields */
+input:focus, textarea:focus {
+  cursor: text !important;
+}
+
+
+
+
+
+
+
+
+
 
 
 
