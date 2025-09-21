@@ -85,6 +85,62 @@ const Portfolio = () => {
     };
   }, []);
 
+
+  // Custom Cursor Implementation
+useEffect(() => {
+  const cursor = document.querySelector('.cursor');
+  const cursorFollower = document.querySelector('.cursor-follower');
+  
+  if (!cursor || !cursorFollower) return;
+
+  const handleMouseMove = (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    
+    setTimeout(() => {
+      cursorFollower.style.left = e.clientX + 'px';
+      cursorFollower.style.top = e.clientY + 'px';
+    }, 100);
+  };
+
+  const handleMouseEnter = () => {
+    cursor.style.opacity = '1';
+    cursorFollower.style.opacity = '0.5';
+  };
+
+  const handleMouseLeave = () => {
+    cursor.style.opacity = '0';
+    cursorFollower.style.opacity = '0';
+  };
+
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseenter', handleMouseEnter);
+  document.addEventListener('mouseleave', handleMouseLeave);
+
+  // Add hover effects for interactive elements
+  const interactiveElements = document.querySelectorAll('a, button, .magnetic-element, [onclick], input, textarea, select');
+  
+  const addHoverEffect = (element) => {
+    element.addEventListener('mouseenter', () => {
+      cursor.classList.add('hover');
+      cursorFollower.classList.add('hover');
+    });
+    
+    element.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hover');
+      cursorFollower.classList.remove('hover');
+    });
+  };
+
+  interactiveElements.forEach(addHoverEffect);
+
+  return () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseenter', handleMouseEnter);
+    document.removeEventListener('mouseleave', handleMouseLeave);
+  };
+}, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -112,6 +168,11 @@ const Portfolio = () => {
   return (
     <>
       <style>{styles}</style>
+      {/* Custom Cursor */}
+    <div className="cursor"></div>
+    <div className="cursor-follower"></div>
+
+      
       <div className="portfolio">
         {/* Enhanced Navigation */}
         <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
@@ -749,6 +810,58 @@ const styles = `
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
+
+
+  /* Custom Cursor */
+.cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background: #0066cc;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+}
+
+.cursor-follower {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #0066cc;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.5;
+}
+
+.cursor.hover {
+  transform: scale(1.5);
+  background: #66ccff;
+}
+
+.cursor-follower.hover {
+  transform: scale(1.2);
+  border-color: #66ccff;
+  opacity: 0.8;
+}
+
+/* Hide default cursor */
+* {
+  cursor: none !important;
+}
+
+/* Show default cursor on form elements */
+input, textarea, select, button {
+  cursor: pointer !important;
+}
+
+
+
+
 
   #root, .portfolio {
     width: 100%;
